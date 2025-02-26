@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% load static %}
+{% block metadescription %}
+    {{ human.description|truncatewords:155 }}
+{% endblock %}
+{% block title %}
+    {{ human.name }} - Sobaka Model Agency
+{% endblock %}
+{% block content %}
+    <div class="row my_hum_row_class">
+        <div class="mx-auto">
+            <p><a href="{% url 'sobaka:all_humans' %}">Home</a> | <a href="{{human.category.get_absolute_url }}">{{human.category}}</a> | 
+            {{human.name}}</p>
+        </div>
+        <div class="container">
+            <br>
+            <div class="row">
+                <div class="col-12 col-sm-12 col-md-12 col-lg-6 text-center">
+                    <div style="min-width:18rem;">
+                        <img src="{{human.image.url}}" 
+                        alt="{{human.name}}">
+                    </div>
+                </div>
+                <div class="col-12 col-sm-12 col-md-12 col-lg-6">
+                    <div>
+                        <h1 class="my_hum_title">{{human.name}}</h1>
+                        <p>€{{human.price}}</p>
+                        <p class="my_title">Model Description</p>
+                        <p class="text-justify my_hum_text">{{human.description}}</p>
+                        {% if human.stock == 0%}
+                            <p class="text-justify my_hum_text"><b>Out of Stock</b></p>
+                        {% else %}
+                            <a class="btn btn-secondary" href="">Add to Cart</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

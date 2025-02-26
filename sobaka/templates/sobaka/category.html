@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% load static %}
+{% block metadescription %}
+    {% if category %}
+        {{ category.description|truncatewords:155 }}
+    {% else %}
+        Welcome to the most prolific model agency in Ireland.
+    {% endif %}
+{% endblock %}
+{% block title %}
+    {% if category %}
+        {{ category.name }} - Sobaka Model Agency
+    {% else %}
+        See Our Models - Sobaka Model Agency
+    {% endif %}
+{% endblock %}
+{% block content %}
+    <!--Breadcrumb navigation-->
+    {% if category %}
+        <div class="row my_row_class">
+            <div class="mx-auto">
+                <p><a href="{% url 'sobaka:all_humans' %}">Our Models</a> | {{category.name}}</p>
+            </div>
+        </div>
+    {% endif %}
+    <div class="mx-auto">
+        {% if category %}
+            <img class="my_image" src="{{category.image.url}}" alt="{{category.name}}">
+        </div>
+        <br>
+        <div>
+            <h1 class="text-center my_title">{{category.name}}</h1>
+            <p class="text-justify">{{category.description}}</p>
+        </div>
+    {% else %}
+        <img class="my_image my_image_padding" src="{% static 'images/banner.jpg' %}" alt="Our Models">
+    </div>
+    <br>
+    <div>
+        <h1 class="text-center my_title" >Our Models</h1>
+        <p class="text-justify">Browse through our model portfolios and find the perfect face for your brand.</p>
+    </div>
+    {% endif %}
+    <div class="container">
+        <div class="row mx-auto">
+            {% for human in hums %}
+                <div class="my_bottom_margin col-9 col-lg-4 col-sm-12 col-md-4">
+                    <div class="card text-center" style="min-width:18rem;">
+                        <a class ="img" href="{{human.get_absolute_url}}"><img class="card-img-top      
+                          my_image"src="{{human.image.url}}" alt="{{human.name}}"></a>
+                        <div class="card-body">
+                            <h4>{{human.name}}</h4>
+                            <p>€{{human.price}}</p>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <br>
+    </div>
+{% endblock %}
