@@ -7,7 +7,7 @@ class CategoryAdmin(admin.ModelAdmin):
 admin.site.register(Category, CategoryAdmin)
 
 class HumanAdmin(admin.ModelAdmin):
-    list_display = ['name', 'price', 'description', 'category', 'available',]
+    list_display = ['name', 'price', 'description', 'category', 'available','height', 'shoe_size', 'waist_size', 'bust_size', 'hip_size', 'eye_color', 'hair_color']
     list_editable = ['price', 'available']
     list_per_page = 20
 
