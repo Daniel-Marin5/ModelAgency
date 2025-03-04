@@ -138,8 +138,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'accounts.CustomUser'
 
-LOGIN_REDIRECT_URL = 'sobaka:all_products'
-LOGOUT_REDIRECT_URL = 'sobaka:all_products'
+LOGIN_REDIRECT_URL = 'sobaka:all_humans'
+LOGOUT_REDIRECT_URL = 'sobaka:all_humans'
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = 'bootstrap5'
 CRISPY_TEMPLATE_PACK = 'bootstrap5'
