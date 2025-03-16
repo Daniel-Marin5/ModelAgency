@@ -10,6 +10,10 @@
 	text-transform: uppercase;
 }
 
+.logopic {
+	height: 50%;
+}
+
 /****Footer****/
 .my_footer {
 	background-color: #f8f9fa;
@@ -78,6 +82,37 @@
 }
 .my_hum_text {
 	padding-right: 20px;
+}
+
+.human_details {
+	
+}
+
+.humpic1 {
+	height: 45rem;
+	width: 30rem;
+	margin-bottom: 2rem;
+}
+
+.humpic2 {
+	height: 27rem;
+	width: 16rem;
+	margin: 1rem;
+}
+.humpic3 {
+	height: 27rem;
+	width: 16rem;
+	margin: 1rem;
+}
+.humpic4 {
+	height: 27rem;
+	width: 16rem;
+	margin: 1rem;
+}
+.humpic5 {
+	height: 27rem;
+	width: 16rem;
+	margin: 1rem;
 }
 /****Signup & Login Page****/
 .errorlist li {

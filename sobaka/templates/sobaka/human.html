@@ -17,20 +17,37 @@
             <div class="row">
                 <div class="col-12 col-sm-12 col-md-12 col-lg-6 text-center">
                     <div style="min-width:18rem;">
-                        <img src="{{human.image.url}}" 
+                        <img class="humpic1" src="{{human.image1.url}}" 
+                        alt="{{human.name}}">
+                    </div>
+                    <div class="col-sm">
+                        <img class="humpic2" src="{{human.image2.url}}" 
+                        alt="{{human.name}}">
+                        <img class="humpic3" src="{{human.image3.url}}" 
+                        alt="{{human.name}}">
+                        <img class="humpic4" src="{{human.image4.url}}" 
+                        alt="{{human.name}}">
+                        <img class="humpic5" src="{{human.image5.url}}" 
                         alt="{{human.name}}">
                     </div>
                 </div>
                 <div class="col-12 col-sm-12 col-md-12 col-lg-6">
-                    <div>
+                    <div class="human_details">
                         <h1 class="my_hum_title">{{human.name}}</h1>
-                        <p>€{{human.price}}</p>
-                        <p class="my_title">Model Description</p>
-                        <p class="text-justify my_hum_text">{{human.description}}</p>
-                        {% if human.stock == 0%}
-                            <p class="text-justify my_hum_text"><b>Out of Stock</b></p>
+                        <br>
+                        <p>Height: {{human.height}} cm</p>
+                        <p>Bust: {{human.bust_size}} cm</p>
+                        <p>Waist: {{human.waist_size}} cm</p>
+                        <p>Hips: {{human.hip_size}} cm</p>
+                        <p>Shoe Size: {{human.shoe_size}} EU</p>
+                        <p>Eye Colour: {{human.eye_color}}</p>
+                        <p>Hair Colour: {{human.hair_color}}</p>
+                        <br>
+                        <p>Hourly Rate: €{{human.price}}</p>
+                        {% if human.available == 0%}
+                            <p class="text-justify my_hum_text"><b>Unavailable</b></p>
                         {% else %}
-                            <a class="btn btn-secondary" href="">Add to Cart</a>
+                            <a class="btn btn-secondary" href="">Book Now</a>
                         {% endif %}
                     </div>
                 </div>

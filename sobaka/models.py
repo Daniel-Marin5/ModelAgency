@@ -2,14 +2,17 @@ from django.db import models
 import uuid
 from django.urls import reverse
 
+def upload_to_human(instance, filename):
+    return f'human/{instance.name}/{filename}'
+
 class Category(models.Model):
     id = models.UUIDField(
         primary_key=True,
         default=uuid.uuid4,
         editable=False)
     name = models.CharField(max_length=250, unique=True)
-    description = models.TextField(blank = True)
-    image = models.ImageField(upload_to = 'category', blank=True)
+    description = models.TextField(blank=True)
+    image = models.ImageField(upload_to='category', blank=True)
 
     class Meta:
         ordering = ('name',)
@@ -28,19 +31,21 @@ class Human(models.Model):
         default=uuid.uuid4,
         editable=False)
     name = models.CharField(max_length=250, unique=True)
-    description = models.TextField(blank = True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     price = models.DecimalField(max_digits=10, decimal_places=2)
-    image = models.ImageField(upload_to = 'human', blank=True)
+    image1 = models.ImageField(upload_to=upload_to_human, blank=True)
+    image2 = models.ImageField(upload_to=upload_to_human, blank=True)
+    image3 = models.ImageField(upload_to=upload_to_human, blank=True)
+    image4 = models.ImageField(upload_to=upload_to_human, blank=True)
+    image5 = models.ImageField(upload_to=upload_to_human, blank=True)
     available = models.BooleanField(default=True)
-    height = models.DecimalField(max_digits=5, decimal_places=2, blank = True, null= True)
-    shoe_size = models.DecimalField(max_digits=5, decimal_places=2, blank = True, null= True)
-    waist_size = models.DecimalField(max_digits=5, decimal_places=2, blank = True, null= True)
-    bust_size = models.DecimalField(max_digits=5, decimal_places=2, blank = True, null= True)   
-    hip_size = models.DecimalField(max_digits=5, decimal_places=2, blank = True, null= True)
-    eye_color = models.CharField(max_length=250, blank = True)
-    hair_color = models.CharField(max_length=250, blank = True)
-
+    height = models.IntegerField(blank=True, null=True)
+    shoe_size = models.IntegerField(blank=True, null=True)
+    waist_size = models.IntegerField(blank=True, null=True)
+    bust_size = models.IntegerField(blank=True, null=True)
+    hip_size = models.IntegerField(blank=True, null=True)
+    eye_color = models.CharField(max_length=250, blank=True)
+    hair_color = models.CharField(max_length=250, blank=True)
 
     class Meta:
         ordering = ('name',)
