@@ -47,7 +47,7 @@
                         {% if human.available == 0%}
                             <p class="text-justify my_hum_text"><b>Unavailable</b></p>
                         {% else %}
-                            <a class="btn btn-secondary" href="">Book Now</a>
+                            <a class="btn btn-secondary" href="{% url 'cart:add_cart' human.id %}">Book Now</a>
                         {% endif %}
                     </div>
                 </div>

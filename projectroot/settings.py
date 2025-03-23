@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'accounts',
     'sobaka',
     'search_app',
+    'cart',
     #3rd party
     'crispy_forms',
     'crispy_bootstrap5',
@@ -53,6 +54,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'middleware.no_cache.NoCacheMiddleware',
 ]
 
 ROOT_URLCONF = 'projectroot.urls'
@@ -69,6 +71,8 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'sobaka.context_processors.menu_links',
+                'cart.context_processors.counter',
+
             ],
         },
     },

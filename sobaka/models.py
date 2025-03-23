@@ -39,6 +39,8 @@ class Human(models.Model):
     image4 = models.ImageField(upload_to=upload_to_human, blank=True)
     image5 = models.ImageField(upload_to=upload_to_human, blank=True)
     available = models.BooleanField(default=True)
+    if available==True:
+        available_hours = models.IntegerField()
     height = models.IntegerField(blank=True, null=True)
     shoe_size = models.IntegerField(blank=True, null=True)
     waist_size = models.IntegerField(blank=True, null=True)
