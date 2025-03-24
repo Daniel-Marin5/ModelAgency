@@ -18,8 +18,8 @@
     <!--Breadcrumb navigation-->
     {% if category %}
         <div class="row my_row_class">
-            <div class="mx-auto">
-                <p><a href="{% url 'sobaka:all_humans' %}">Our Models</a> | {{category.name}}</p>
+            <div class="mx-auto breadcrumb-nav">
+                <p><a href="{% url 'sobaka:all_humans' %}">Our Models</a> | <a href="{% url 'sobaka:all_humans' %}">{{category.name}}</a></p>
             </div>
         </div>
     {% endif %}

@@ -1,4 +1,5 @@
 from django.views.generic.edit import CreateView
+from django.views.generic import TemplateView
 from django.urls import reverse_lazy
 from django.contrib.auth.models import Group
 from django.contrib.auth import login
@@ -21,3 +22,6 @@ class SignUpView(CreateView):
         login(self.request, self.object)
 
         return response
+
+class ProfileView(TemplateView):
+    template_name = 'profile.html'

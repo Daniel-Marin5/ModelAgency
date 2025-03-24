@@ -8,9 +8,8 @@
 {% endblock %}
 {% block content %}
     <div class="row my_hum_row_class">
-        <div class="mx-auto">
-            <p><a href="{% url 'sobaka:all_humans' %}">Home</a> | <a href="{{human.category.get_absolute_url }}">{{human.category}}</a> | 
-            {{human.name}}</p>
+        <div class="mx-auto breadcrumb-nav">
+            <p><a href="{% url 'sobaka:all_humans' %}">Home</a> | <a href="{{human.category.get_absolute_url }}">{{human.category}}</a> | <a href="#">{{human.name}}</a></p>
         </div>
         <div class="container">
             <br>
@@ -47,7 +46,11 @@
                         {% if human.available == 0%}
                             <p class="text-justify my_hum_text"><b>Unavailable</b></p>
                         {% else %}
-                            <a class="btn btn-secondary" href="{% url 'cart:add_cart' human.id %}">Book Now</a>
+                            {% if user.is_authenticated %}
+                                <a class="btn btn-secondary" href="{% url 'cart:add_cart' human.id %}">Book Now</a>
+                            {% else %}
+                                <p>Please login or create an account to make a booking</p>
+                            {% endif %}
                         {% endif %}
                     </div>
                 </div>

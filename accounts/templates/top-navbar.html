@@ -1,19 +1,19 @@
+{% load static %}
 <div class="container">
     <div class="my_custom_menu">
         <ul>
             {% if user.is_authenticated %}
             <li>
-                Welcome,
                 <a href="#" class="dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    {{ user.username }} <i class="fas fa-user-circle"></i>
+                    Welcome, {{ user.username }} <i class="fas fa-user-circle"></i>
                 </a>
                 <div class="dropdown-menu dropdown-menu-right">
+                    <a href="{% url 'accounts:profile' %}" class="dropdown-item">Account</a>
                     <form method="post" action="{% url 'logout' %}">
                         {% csrf_token %}
                         <button type="submit" class="dropdown-item" style="border: none; background: none;">Sign Out <i class="fas fa-sign-out-alt"></i>
                         </button>
                     </form>
-                    <a href="#" class="dropdown-item">Change Password</a>
                 </div>
             </li>
             {% else %}
@@ -24,8 +24,52 @@
                 <a href="{% url 'login' %}">Sign In <i class="fas fa-sign-in"></i></a>
             </li>
             {% endif %}
+            <li>
+                <button id="theme-toggle" class="btn btn-secondary">
+                    <i id="theme-icon" class="fas fa-moon"></i>
+                </button>
+            </li>
         </ul>
     </div>
 </div>
 
-    
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const themeToggle = document.getElementById('theme-toggle');
+        const themeIcon = document.getElementById('theme-icon');
+        const logo = document.getElementById('logo');
+        const currentTheme = localStorage.getItem('theme') || 'light';
+        const logoLight = "{% static 'images/logo.png' %}";
+        const logoDark = "{% static 'images/logo_night.png' %}";
+
+        function updateLogo(theme) {
+            if (theme === 'dark') {
+                logo.src = logoDark;
+            } else {
+                logo.src = logoLight;
+            }
+        }
+
+        if (currentTheme === 'dark') {
+            document.body.classList.add('dark-mode');
+            themeIcon.classList.remove('fa-moon');
+            themeIcon.classList.add('fa-sun');
+            updateLogo('dark');
+        }
+
+        themeToggle.addEventListener('click', function() {
+            document.body.classList.toggle('dark-mode');
+            if (document.body.classList.contains('dark-mode')) {
+                themeIcon.classList.remove('fa-moon');
+                themeIcon.classList.add('fa-sun');
+                localStorage.setItem('theme', 'dark');
+                updateLogo('dark');
+            } else {
+                themeIcon.classList.remove('fa-sun');
+                themeIcon.classList.add('fa-moon');
+                localStorage.setItem('theme', 'light');
+                updateLogo('light');
+            }
+        });
+    });
+</script>

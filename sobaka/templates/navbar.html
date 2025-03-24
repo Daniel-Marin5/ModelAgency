@@ -23,9 +23,30 @@
         {% endif %}      
       </ul>
       <form class="d-flex" action="{% url 'search_app:searchResult'%}" method="get">
+        <select name="attribute" class="form-control me-2" id="attribute-select">
+          <option value="">Filter</option>
+          <option value="name">Name</option>
+          <option value="category__name">Category</option>
+          <option value="height">Height</option>
+          <option value="bust_size">Bust</option>
+          <option value="hip_size">Hips</option>
+          <option value="waist_size">Waist</option>
+          <option value="shoe_size">Shoe Size</option>
+          <option value="eye_color">Eye Color</option>
+          <option value="hair_color">Hair Color</option>
+        </select>
         <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" name="q">
         <button class="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>
       </form>
     </div>
   </div>
 </nav>
+
+<script>
+  document.getElementById('attribute-select').addEventListener('focus', function() {
+    var filterOption = this.querySelector('option[value=""]');
+    if (filterOption) {
+      filterOption.remove();
+    }
+  });
+</script>
