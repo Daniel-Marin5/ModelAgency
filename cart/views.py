@@ -2,6 +2,9 @@ from django.shortcuts import redirect, render, get_object_or_404
 from sobaka.models import Human
 from .models import Cart, CartItem
 from django.core.exceptions import ObjectDoesNotExist
+import stripe
+from django.conf import settings
+from django.urls import reverse
 
 def _cart_id(request):
     cart = request.session.session_key
@@ -34,11 +37,47 @@ def cart_detail(request, total=0, counter=0, cart_items = None):
             counter += cart_item.quantity
     except ObjectDoesNotExist:
         pass
-    return render(request, 'cart.html',
-                {'cart_items':cart_items,
-                'total':total,
-                'counter':counter
-                })
+    stripe.api_key = settings.STRIPE_SECRET_KEY 
+    stripe_total = int(total * 100) # Convert total to cents 
+    description = 'Sobaka - New Booking' 
+
+    if request.method == 'POST': 
+        try:
+            checkout_session = stripe.checkout.Session.create( 
+                payment_method_types=['card'], 
+                line_items=[{ 
+                    'price_data': { 
+                        'currency': 'eur', 
+                        'product_data': { 
+                            'name': 'Booking from Sobaka Model Agency', 
+                        }, 
+                        'unit_amount': stripe_total, 
+                    }, 
+                    'quantity': 1, 
+                }], 
+                mode='payment', 
+                billing_address_collection='required',  
+                shipping_address_collection={}, 
+                payment_intent_data={'description': description}, 
+                success_url=request.build_absolute_uri(reverse('sobaka:all_humans')),  
+                cancel_url=request.build_absolute_uri(reverse('cart:cart_detail')), 
+            ) 
+            # Redirect to the Stripe checkout page
+            return redirect(checkout_session.url, code=303) 
+        except Exception as e: 
+            # Render the template with an error message 
+            return render(request, 'cart.html', { 
+                'cart_items': cart_items, 
+                'total': total, 
+                'counter': counter, 
+                'error': str(e), # Display error if there's an issue with Stripe 
+            }) 
+
+    return render(request, 'cart.html', { 
+        'cart_items': cart_items, 
+        'total': total, 
+        'counter': counter, 
+    }) 
 
 def cart_remove(request, human_id):
     cart= Cart.objects.get(cart_id=_cart_id(request))
