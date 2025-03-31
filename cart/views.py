@@ -11,6 +11,7 @@ from uuid import UUID
 from vouchers.models import Voucher
 from vouchers.forms import VoucherApplyForm
 from decimal import Decimal
+from django.core.mail import send_mail
 
 def _cart_id(request):
     cart = request.session.session_key
@@ -236,6 +237,7 @@ def create_order(request):
                 else:
                     oi.price = oi.price*oi.quantity
                 oi.save() 
+                send_email(request,order-details)
             except Exception as e: 
                 print(f"Error processing item {item.id}: {e}")
                 continue  # Log error and continue processing other items
@@ -256,3 +258,16 @@ def create_order(request):
     except Exception as e: 
         print(f"Unexpected error: {e}") 
         return redirect("sobaka:all_humans")
+
+def send_email(request, order_id):
+    try:
+        send_mail(
+            'Your order',
+            'Thank you for your order!',
+            'no-reply@onlineshop.com',
+            ['p@c.ie'],
+            fail_silently=False,
+            html_message=f"<p>Dear {request.user.username},</p><p>Thank you for your order. Your order number is {order_id.id}</p>"
+        )
+    except Exception as e:
+        print(f"Email failed: {e}")
