@@ -8,6 +8,9 @@ from django.urls import reverse
 from order.models import Order, OrderItem
 from stripe import StripeError
 from uuid import UUID
+from vouchers.models import Voucher
+from vouchers.forms import VoucherApplyForm
+from decimal import Decimal
 
 def _cart_id(request):
     cart = request.session.session_key
@@ -46,6 +49,12 @@ def add_cart(request, human_id):
     return redirect('cart:cart_detail')
 
 def cart_detail(request, total=0, counter=0, cart_items=None):
+    discount = 0
+    voucher_id = 0
+    new_total = 0
+    voucher = None
+
+
     try:
         # Retrieve the cart using the session ID
         cart = Cart.objects.get(cart_id=_cart_id(request))
@@ -64,6 +73,18 @@ def cart_detail(request, total=0, counter=0, cart_items=None):
     stripe.api_key = settings.STRIPE_SECRET_KEY
     stripe_total = int(total * 100)  # Convert total to cents
     description = 'Sobaka - New Booking'
+    voucher_apply_form = VoucherApplyForm()
+
+    try:
+        voucher_id = request.session.get('voucher_id')
+        voucher = Voucher.objects.get(id=voucher_id)
+        if voucher != None:
+            discount = (total*(voucher.discount/Decimal('100')))
+            new_total = (total - discount)
+            stripe_total = int(new_total * 100)
+    except: 
+        ObjectDoesNotExist
+        pass
 
     if request.method == 'POST':
         try:
@@ -84,7 +105,7 @@ def cart_detail(request, total=0, counter=0, cart_items=None):
                 billing_address_collection='required',
                 shipping_address_collection={},
                 payment_intent_data={'description': description},
-                success_url=request.build_absolute_uri(reverse('cart:new_order')) + f"?session_id={{CHECKOUT_SESSION_ID}}",
+                success_url=request.build_absolute_uri(reverse('cart:new_order')) + f"?session_id={{CHECKOUT_SESSION_ID}}&voucher_id={voucher_id}&cart_total={total}",
                 cancel_url=request.build_absolute_uri(reverse('cart:cart_detail')),
             )
             # Redirect to the Stripe checkout page
@@ -103,6 +124,10 @@ def cart_detail(request, total=0, counter=0, cart_items=None):
         'cart_items': cart_items,
         'total': total,
         'counter': counter,
+        'voucher_apply_form': voucher_apply_form,
+        'new_total': new_total,
+        'voucher': voucher,
+        'discount': discount
     })
 
 def cart_remove(request, human_id):
@@ -136,7 +161,9 @@ def empty_cart(request):
 
 def create_order(request): 
     try: 
-        session_id = request.GET.get('session_id') 
+        session_id = request.GET.get('session_id')
+        cart_total = request.GET.get('cart_total')
+        voucher_id = request.GET.get('voucher_id') 
         if not session_id: 
             raise ValueError("Session ID not found.") 
 
@@ -183,7 +210,15 @@ def create_order(request):
             return redirect("sobaka:all_humans") 
         except Exception as e: 
             print(f"Error: {e}") 
-            return redirect("sobaka:all_humans") 
+            return redirect("sobaka:all_humans")
+
+        voucher = get_object_or_404(Voucher, id=voucher_id)
+        if voucher != None:
+            order_details.voucher = voucher
+            cart_total = Decimal(cart_total)
+            order_details.discount = cart_total*(voucher.discount/Decimal('100'))
+            order_details.total = (cart_total-order_details.discount)
+            order_details.save() 
 
         for item in cart_items: 
             try: 
@@ -194,6 +229,12 @@ def create_order(request):
                     duration=item.duration,  # Include duration
                     order=order_details 
                 ) 
+                oi.save()
+                if voucher != None:
+                    discount = (oi.price*(voucher.discount/Decimal('100')))
+                    oi.price = (oi.price - discount)
+                else:
+                    oi.price = oi.price*oi.quantity
                 oi.save() 
             except Exception as e: 
                 print(f"Error processing item {item.id}: {e}")

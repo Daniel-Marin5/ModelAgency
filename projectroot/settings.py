@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'sobaka',
     'search_app',
     'cart',
+    'vouchers',
     'order',
     #3rd party
     'crispy_forms',
