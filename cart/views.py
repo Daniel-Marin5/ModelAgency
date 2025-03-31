@@ -157,7 +157,7 @@ def create_order(request):
         try: 
             order_details = Order.objects.create( 
                 token=session.id, 
-                total=session.amount_total / 100, # Convert cents to currency units 
+                total=session.amount_total / 100,  # Convert cents to currency units 
                 emailAddress=customer_details.email, 
                 billingName=billing_name, 
                 billingAddress1=billing_address.line1, 
@@ -200,7 +200,9 @@ def create_order(request):
                 continue  # Log error and continue processing other items
 
         empty_cart(request) 
-        return redirect('sobaka:all_humans') 
+
+        # Redirect to the "Thank You" page with the order ID
+        return redirect('order:thanks', order_id=order_details.id)
     
     except ValueError as ve: 
         print(f"Error: {ve}") 

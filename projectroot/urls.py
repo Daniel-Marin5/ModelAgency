@@ -26,5 +26,6 @@ urlpatterns = [
     path('', include('sobaka.urls')),
     path('search/',include('search_app.urls')),
     path('cart/', include('cart.urls')),
+    path('order/', include('order.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 

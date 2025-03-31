@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}
+    Thanks - Sobaka Model Agency
+{% endblock %}
+{% block content %}
+    <div>
+        <div class="text-center">
+            <br>
+            <br>
+            <h1 class="text-center my_title">
+                Thanks for making a booking with us!
+            </h1>
+            <br>
+            <br>
+            {% if customer_order %}
+            <p>Order ID: {{ customer_order.id }}</p>
+            <p>Total: €{{ customer_order.total }}</p>
+            <p>Billing Name: {{ customer_order.billingName }}</p>
+            <p>Billing Address: {{ customer_order.billingAddress1 }}, {{ customer_order.billingCity }}, {{ customer_order.billingPostcode }}, {{ customer_order.billingCountry }}</p>
+            <p>Shipping Name: {{ customer_order.shippingName }}</p>
+            <p>Shipping Address: {{ customer_order.shippingAddress1 }}, {{ customer_order.shippingCity }}, {{ customer_order.shippingPostcode }}, {{ customer_order.shippingCountry }}</p>
+        {% else %}
+            <p>We could not find your order details. Please contact support if you have any questions.</p>
+        {% endif %}
+        <a href="{% url 'sobaka:all_humans' %}">Continue Browsing</a>
+            </p>
+        </div>
+    </div>
+    <br>
+    <br>
+{% endblock %}
