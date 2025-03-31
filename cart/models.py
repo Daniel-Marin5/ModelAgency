@@ -11,13 +11,13 @@ class Cart(models.Model):
 
     def __str__(self):
         return self.cart_id
-    
+
 class CartItem(models.Model):
     product = models.ForeignKey(Human, on_delete=models.CASCADE)
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
-    quantity = models.PositiveIntegerField()
+    quantity = models.IntegerField()
+    duration = models.IntegerField(default=1)  # New field for booking duration (in hours)
     active = models.BooleanField(default=True)
-
     class Meta:
         db_table = 'CartItem'
 
