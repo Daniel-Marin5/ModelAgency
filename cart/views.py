@@ -33,7 +33,7 @@ def update_duration(request, human_id):
 
 def add_cart(request, human_id):
     product = Human.objects.get(id=human_id)
-    duration = int(request.POST.get('duration', 1))  # Get duration from POST data (default to 1 hour)
+    duration = int(request.GET.get('duration', 1))  # Get duration from GET data (default to 1 hour)
     try:
         cart = Cart.objects.get(cart_id=_cart_id(request))
     except Cart.DoesNotExist: 
@@ -41,9 +41,8 @@ def add_cart(request, human_id):
         cart.save()
     try:
         cart_item = CartItem.objects.get(product=product, cart=cart)
-        if (cart_item.quantity < cart_item.product.available):
-            cart_item.quantity += 1
-            cart_item.duration = duration  # Update duration
+        cart_item.quantity += 1
+        cart_item.duration = duration  # Update duration
         cart_item.save()
     except CartItem.DoesNotExist:
         cart_item = CartItem.objects.create(product=product, quantity=1, duration=duration, cart=cart)
@@ -54,7 +53,6 @@ def cart_detail(request, total=0, counter=0, cart_items=None):
     voucher_id = 0
     new_total = 0
     voucher = None
-
 
     try:
         # Retrieve the cart using the session ID
@@ -67,25 +65,25 @@ def cart_detail(request, total=0, counter=0, cart_items=None):
             # Include duration in the total price calculation
             total += (cart_item.product.price * cart_item.quantity * cart_item.duration)
             counter += cart_item.quantity
+
+        # Check if a voucher is applied and calculate the discount
+        voucher_id = request.session.get('voucher_id')
+        if voucher_id and total > 0:  # Only apply voucher if the cart is not empty
+            voucher = Voucher.objects.get(id=voucher_id)
+            discount = (total * (voucher.discount / Decimal('100')))
+            new_total = (total - discount)
+        else:
+            new_total = total  # No discount applied if cart is empty
+
     except ObjectDoesNotExist:
-        pass
+        # Clear the voucher session if the cart is empty
+        request.session['voucher_id'] = None
 
     # Set up Stripe payment details
     stripe.api_key = settings.STRIPE_SECRET_KEY
-    stripe_total = int(total * 100)  # Convert total to cents
+    stripe_total = int(new_total * 100)  # Convert total to cents
     description = 'Sobaka - New Booking'
     voucher_apply_form = VoucherApplyForm()
-
-    try:
-        voucher_id = request.session.get('voucher_id')
-        voucher = Voucher.objects.get(id=voucher_id)
-        if voucher != None:
-            discount = (total*(voucher.discount/Decimal('100')))
-            new_total = (total - discount)
-            stripe_total = int(new_total * 100)
-    except: 
-        ObjectDoesNotExist
-        pass
 
     if request.method == 'POST':
         try:
@@ -132,14 +130,19 @@ def cart_detail(request, total=0, counter=0, cart_items=None):
     })
 
 def cart_remove(request, human_id):
-    cart= Cart.objects.get(cart_id=_cart_id(request))
+    cart = Cart.objects.get(cart_id=_cart_id(request))
     product = get_object_or_404(Human, id=human_id)
-    cart_item = CartItem.objects.get(product=product, cart=cart)
-    if cart_item.quantity > 1:
-        cart_item.quantity -= 1
-        cart_item.save()
-    else:
-        cart_item.delete()
+    duration = int(request.GET.get('duration', 1))  # Get duration from GET data (default to 1 hour)
+    try:
+        cart_item = CartItem.objects.get(product=product, cart=cart)
+        if cart_item.quantity > 1:
+            cart_item.quantity -= 1
+            cart_item.duration = duration  # Update duration
+            cart_item.save()
+        else:
+            cart_item.delete()
+    except CartItem.DoesNotExist:
+        pass
     return redirect('cart:cart_detail')
 
 def full_remove(request, human_id):
@@ -147,6 +150,9 @@ def full_remove(request, human_id):
     product = get_object_or_404(Human, id=human_id)
     cart_item = CartItem.objects.get(product=product, cart=cart)
     cart_item.delete()
+    if not CartItem.objects.filter(cart=cart).exists():
+        request.session['voucher_id'] = None
+
     return redirect('cart:cart_detail')
 
 def empty_cart(request):
@@ -155,6 +161,7 @@ def empty_cart(request):
         cart_items = CartItem.objects.filter(cart=cart, active=True)
         cart_items.delete()
         cart.delete()
+        request.session['voucher_id'] = None
         return redirect('sobaka:all_humans')
     except Cart.DoesNotExist:
         pass

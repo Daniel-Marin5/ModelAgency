@@ -76,6 +76,27 @@
 	text-transform: uppercase;
 	letter-spacing: .2em;
 }
+
+/* Paginator buttons */
+.paginator-btn {
+    background-color: #f8f9fa;
+    color: #000;
+    border: 1px solid #ced4da;
+    margin: 0 2px;
+}
+
+.paginator-btn:hover {
+    background-color: #e9ecef;
+    color: #000;
+    border-color: #adb5bd;
+}
+
+.paginator-btn.active {
+    background-color: #adb5bd;
+    color: #fff;
+    border-color: #adb5bd;
+}
+
 /****Product Page****/
 .my_hum_row_class {
 	padding-top: 15px;
@@ -168,6 +189,7 @@
 	
 /****Cart Page****/
 .my_custom_table {
+	width: 100%;
 	min-width: 400px;
 	font-size: 14px;
 }
@@ -192,7 +214,6 @@
 .my_custom_button {
 	margin-top: 5px;
 }
-
 
 /* Dark mode styles */
 body.dark-mode {
@@ -350,4 +371,22 @@ body.dark-mode select.form-control option {
 
 body.dark-mode select.form-control option:hover {
     background-color: #555555 !important;
+}
+
+body.dark-mode .paginator-btn {
+    background-color: #2b2b2b !important;
+    color: #fff !important;
+    border: 1px solid #444444 !important;
+}
+
+body.dark-mode .paginator-btn:hover {
+    background-color: #444444 !important;
+    color: #fff !important;
+    border-color: #555555 !important;
+}
+
+body.dark-mode .paginator-btn.active {
+    background-color: #555555 !important;
+    color: #fff !important;
+    border-color: #555555 !important;
 }
