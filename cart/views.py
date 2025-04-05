@@ -12,6 +12,10 @@ from vouchers.models import Voucher
 from vouchers.forms import VoucherApplyForm
 from decimal import Decimal
 from django.core.mail import send_mail
+from datetime import date, timedelta
+from .forms import BookingDateForm
+from sobaka.models import UnavailableDate
+from django.http import JsonResponse
 
 def _cart_id(request):
     cart = request.session.session_key
@@ -34,6 +38,14 @@ def update_duration(request, human_id):
 def add_cart(request, human_id):
     product = Human.objects.get(id=human_id)
     duration = int(request.GET.get('duration', 1))  # Get duration from GET data (default to 1 hour)
+    booking_date = request.GET.get('booking_date')  # Get booking date from GET data
+
+    if booking_date:
+        booking_date = date.fromisoformat(booking_date)
+        if not product.is_available_on(booking_date):
+            # If not available, redirect to the cart with an error message
+            return redirect('cart:cart_detail')
+
     try:
         cart = Cart.objects.get(cart_id=_cart_id(request))
     except Cart.DoesNotExist: 
@@ -62,32 +74,36 @@ def cart_detail(request, total=0, counter=0, cart_items=None):
         
         # Calculate the total price and item count
         for cart_item in cart_items:
-            # Include duration in the total price calculation
-            total += (cart_item.product.price * cart_item.quantity * cart_item.duration)
+            total += (cart_item.product.price * cart_item.quantity)
             counter += cart_item.quantity
 
         # Check if a voucher is applied and calculate the discount
         voucher_id = request.session.get('voucher_id')
-        if voucher_id and total > 0:  # Only apply voucher if the cart is not empty
+        if voucher_id and total > 0:
             voucher = Voucher.objects.get(id=voucher_id)
             discount = (total * (voucher.discount / Decimal('100')))
             new_total = (total - discount)
         else:
-            new_total = total  # No discount applied if cart is empty
+            new_total = total
+
+        # Fetch unavailable dates for each human in the cart
+        unavailable_dates = {
+            str(cart_item.product.id): list(cart_item.product.unavailable_dates.values_list('date', flat=True))
+            for cart_item in cart_items
+        }
 
     except ObjectDoesNotExist:
-        # Clear the voucher session if the cart is empty
         request.session['voucher_id'] = None
+        unavailable_dates = {}
 
     # Set up Stripe payment details
     stripe.api_key = settings.STRIPE_SECRET_KEY
-    stripe_total = int(new_total * 100)  # Convert total to cents
+    stripe_total = int(new_total * 100)
     description = 'Sobaka - New Booking'
     voucher_apply_form = VoucherApplyForm()
 
     if request.method == 'POST':
         try:
-            # Create a Stripe checkout session
             checkout_session = stripe.checkout.Session.create(
                 payment_method_types=['card'],
                 line_items=[{
@@ -107,16 +123,16 @@ def cart_detail(request, total=0, counter=0, cart_items=None):
                 success_url=request.build_absolute_uri(reverse('cart:new_order')) + f"?session_id={{CHECKOUT_SESSION_ID}}&voucher_id={voucher_id}&cart_total={total}",
                 cancel_url=request.build_absolute_uri(reverse('cart:cart_detail')),
             )
-            # Redirect to the Stripe checkout page
             return redirect(checkout_session.url, code=303)
         except Exception as e:
-            # Render the template with an error message
             return render(request, 'cart.html', {
                 'cart_items': cart_items,
                 'total': total,
                 'counter': counter,
-                'error': str(e),  # Display error if there's an issue with Stripe
+                'error': str(e),
             })
+
+    booking_date_form = BookingDateForm()
 
     # Render the cart template with the cart details
     return render(request, 'cart.html', {
@@ -126,8 +142,44 @@ def cart_detail(request, total=0, counter=0, cart_items=None):
         'voucher_apply_form': voucher_apply_form,
         'new_total': new_total,
         'voucher': voucher,
-        'discount': discount
+        'discount': discount,
+        'booking_date_form': booking_date_form,
+        'unavailable_dates': unavailable_dates,  # Pass unavailable dates to the template
     })
+
+def select_date(request):
+    if request.method == 'POST':
+        booking_date = request.POST.get('booking_date')  # Get the date from the form
+        if booking_date:
+            booking_date = date.fromisoformat(booking_date)  # Convert string to date object
+            cart = Cart.objects.get(cart_id=_cart_id(request))
+            cart_items = CartItem.objects.filter(cart=cart, active=True)
+
+            for cart_item in cart_items:
+                human = cart_item.product
+                # Check if the model is available on the selected date
+                if not human.is_available_on(booking_date):
+                    # If not available, show an error message
+                    return render(request, 'cart.html', {
+                        'cart_items': cart_items,
+                        'error': f"{human.name} is not available on {booking_date}. Please select another date.",
+                    })
+
+                # Mark the date as unavailable
+                UnavailableDate.objects.create(human=human, date=booking_date)
+                # Save the selected date to the cart item
+                cart_item.selected_date = booking_date
+                cart_item.save()
+
+            return redirect('cart:cart_detail')
+    return redirect('cart:cart_detail')
+
+
+def get_unavailable_dates(request, human_id):
+    """API endpoint to fetch unavailable dates for a specific human."""
+    human = get_object_or_404(Human, id=human_id)
+    unavailable_dates = human.unavailable_dates.values_list('date', flat=True)
+    return JsonResponse(list(unavailable_dates), safe=False)
 
 def cart_remove(request, human_id):
     cart = Cart.objects.get(cart_id=_cart_id(request))

@@ -7,6 +7,11 @@
     Sobaka Model Agency - Booking
 {% endblock %}
 {% block content %}
+    {% if error %}
+        <div class="alert alert-danger" role="alert">
+            {{ error }}
+        </div>
+    {% endif %}
     {% if not cart_items %}
         <div>
             <div class="text-center">
@@ -54,6 +59,22 @@
                                 Session Price: €{{ cart_item.product.price }}
                                 <br>
                                 <a>Session Duration: {{ cart_item.duration }} hours</a>
+                                <br>
+                                <!-- Calendar Widget -->
+                                <form method="post" action="{% url 'cart:select_date' %}">
+                                    {% csrf_token %}
+                                    <input id="booking-date-{{ cart_item.product.id }}" 
+                                        name="booking_date" 
+                                        type="text" 
+                                        class="form-control mt-2" 
+                                        placeholder="Select a date" 
+                                        required 
+                                        data-id="{{ cart_item.product.id }}">
+                                    <button type="submit" class="btn btn-secondary btn-sm mt-2">Confirm Date</button>
+                                </form>
+                                {% if cart_item.selected_date %}
+                                    <p class="mt-2">Selected Date: {{ cart_item.selected_date }}</p>
+                                {% endif %}
                             </td>
                             <td>
                                 €{{ cart_item.sub_total }}
@@ -134,7 +155,7 @@
                 <p>Apply a voucher:</p>
                 <form action="{% url 'vouchers:apply' %}" method="post">
                     {{ voucher_apply_form }}
-                    <input type="submit" value="Apply">
+                    <input class="btn btn-secondary btn-block my_custom_button" type="submit" value="Apply">
                     {% csrf_token %}
                 </form>
                 <form action="{% url 'cart:cart_detail' %}" method="POST">
@@ -149,11 +170,48 @@
                         Continue Shopping
                     </a>
                 </div>
+                
             </div>
         </div>
         <br>
     {% endif %}
 
+    <!-- Include Flatpickr CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
+    <!-- Include Flatpickr JS -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+    // Initialize Flatpickr for each booking date input
+    document.querySelectorAll('input[id^="booking-date-"]').forEach(function (input) {
+        const humanId = input.getAttribute('data-id'); // Use the data-id attribute to get the full UUID
+        console.log(`Initializing Flatpickr for input: ${input.id}, human ID: ${humanId}`); // Debugging log
+
+        fetch(`/cart/unavailable_dates/${humanId}/`) // Fetch unavailable dates for the human
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(unavailableDates => {
+                console.log(`Unavailable dates for human ID ${humanId}:`, unavailableDates); // Debugging log
+                flatpickr(input, {
+                    minDate: "today", // Start from the current date
+                    maxDate: new Date().fp_incr(14), // Allow selection up to 2 weeks from today
+                    dateFormat: "Y-m-d", // Format the date as YYYY-MM-DD
+                    disable: unavailableDates.map(date => new Date(date)), // Disable unavailable dates
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching unavailable dates:', error);
+                alert('Could not load unavailable dates. Please try again later.');
+            });
+    });
+});
+    </script>
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
@@ -166,7 +224,7 @@
                         plusIcon.style.visibility = 'visible';
                     }
                 });
-    
+
                 document.querySelectorAll('.minus-icon').forEach(function (minusIcon) {
                     const duration = parseInt(minusIcon.getAttribute('data-duration'));
                     if (duration <= 1) {
@@ -176,9 +234,9 @@
                     }
                 });
             }
-    
+
             updateIcons();
-    
+
             document.querySelectorAll('.plus-icon, .minus-icon').forEach(function (icon) {
                 icon.addEventListener('click', function () {
                     setTimeout(updateIcons, 500);

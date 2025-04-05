@@ -10,4 +10,6 @@ urlpatterns = [
     path('full_remove/<uuid:human_id>/', views.full_remove, name='full_remove'),
     path('new_order/', views.create_order, name='new_order'),
     path('update_duration/<uuid:human_id>/', views.update_duration, name='update_duration'), 
+    path('select_date/', views.select_date, name='select_date'),
+    path('unavailable_dates/<uuid:human_id>/', views.get_unavailable_dates, name='get_unavailable_dates'),
 ]
