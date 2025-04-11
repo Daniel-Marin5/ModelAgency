@@ -16,6 +16,7 @@ from datetime import date, timedelta
 from .forms import BookingDateForm
 from sobaka.models import UnavailableDate
 from django.http import JsonResponse
+import logging
 
 def _cart_id(request):
     cart = request.session.session_key
@@ -66,9 +67,7 @@ def select_date(request):
                         'error': f"{human.name} is not available on {booking_date}. Please select another date.",
                     })
 
-                # Mark the date as unavailable
-                UnavailableDate.objects.create(human=human, date=booking_date)
-                # Save the selected date to the cart item
+                # Temporarily store the selected date in the CartItem
                 cart_item.selected_date = booking_date
                 cart_item.save()
 
@@ -86,6 +85,7 @@ def cart_detail(request, total=0, counter=0, cart_items=None):
     voucher_id = 0
     new_total = 0
     voucher = None
+    error = None
 
     try:
         # Retrieve the cart using the session ID
@@ -169,7 +169,8 @@ def cart_detail(request, total=0, counter=0, cart_items=None):
         'voucher': voucher,
         'discount': discount,
         'booking_date_form': booking_date_form,
-        'unavailable_dates': unavailable_dates,  # Pass unavailable dates to the template
+        'unavailable_dates': unavailable_dates,
+        'error': error,  # Pass unavailable dates to the template
     })
 
 def cart_remove(request, human_id):
@@ -187,6 +188,7 @@ def full_remove(request, human_id):
     cart = Cart.objects.get(cart_id=_cart_id(request))
     product = get_object_or_404(Human, id=human_id)
     cart_item = CartItem.objects.get(product=product, cart=cart)
+    cart_item.selected_date = None  # Clear the selected date
     cart_item.delete()
     if not CartItem.objects.filter(cart=cart).exists():
         request.session['voucher_id'] = None
@@ -197,6 +199,9 @@ def empty_cart(request):
     try:
         cart = Cart.objects.get(cart_id=_cart_id(request))
         cart_items = CartItem.objects.filter(cart=cart, active=True)
+        for cart_item in cart_items:
+            cart_item.selected_date = None  # Clear the selected date
+            cart_item.save()  # Save the changes to the database
         cart_items.delete()
         cart.delete()
         request.session['voucher_id'] = None
@@ -205,20 +210,24 @@ def empty_cart(request):
         pass
     return redirect('cart:cart_detail')
 
-def create_order(request): 
+def create_order(request):
+    logger = logging.getLogger('custom_logger') 
     try: 
         session_id = request.GET.get('session_id') 
-        if not session_id: 
+        if not session_id:
+            logger.error("Session ID not found.") 
             raise ValueError("Session ID not found.") 
 
         try: 
             session = stripe.checkout.Session.retrieve(session_id) 
+            logger.info(f"Stripe session retrieved: {session}")
         except StripeError as e: 
-            print(f"Stripe Error: {e}")
+            logger.error(f"Stripe Error: {e}")
             return redirect("sobaka:all_humans")  
 
         customer_details = session.customer_details 
         if not customer_details or not customer_details.address: 
+            logger.error("Missing information in the Stripe session.")
             raise ValueError("Missing information in the Stripe session.") 
 
         billing_address = customer_details.address 
@@ -243,18 +252,20 @@ def create_order(request):
                 shippingCountry=shipping_address.country, 
             ) 
             order_details.save() 
+            logger.info(f"Order created: {order_details}")
         except Exception as e:  
-            print(f"Error creating order: {e}") 
+            logger.error(f"Error creating order: {e}") 
             return redirect("sobaka:all_humans")  
 
         try: 
             cart = Cart.objects.get(cart_id=_cart_id(request)) 
             cart_items = CartItem.objects.filter(cart=cart, active=True) 
+            logger.info(f"Cart retrieved: {cart}, Items: {[str(item) for item in cart_items]}")
         except ObjectDoesNotExist: 
-            print("Cart or cart items not found.")
+            logger.error("Cart or cart items not found.")
             return redirect("sobaka:all_humans") 
         except Exception as e: 
-            print(f"Error retrieving cart: {e}") 
+            logger.error(f"Error retrieving cart: {e}") 
             return redirect("sobaka:all_humans") 
 
         # Retrieve voucher from session
@@ -276,36 +287,45 @@ def create_order(request):
                     price=item.product.price, 
                     order=order_details 
                 ) 
+                logger.info(f"Order item created: {oi}")
                 if voucher:
                     discount = oi.price * (voucher.discount / Decimal('100'))
                     oi.price -= discount
                 oi.save()
+
+                # Add the selected date to the UnavailableDate model
+                if item.selected_date:
+                    UnavailableDate.objects.create(human=item.product, date=item.selected_date)
+                    logger.info(f"Unavailable date added: {item.selected_date} for {item.product}")
+
             except Exception as e: 
-                print(f"Error processing item {item.id}: {e}")
+                logger.error(f"Error processing item {item.id}: {e}")
                 continue  # Log error and continue processing other items
 
         # Send confirmation email
         try:
             send_email(request, order_details)
+            logger.info(f"Confirmation email sent for order: {order_details.id}")
         except Exception as e:
-            print(f"Error sending email: {e}")
+            logger.error(f"Error sending email: {e}")
 
         # Empty the cart
         empty_cart(request) 
+        logger.info("Cart emptied successfully.")
 
         # Redirect to the "Thank You" page with the order ID
         return redirect('order:thanks', order_id=order_details.id)
     
     except ValueError as ve: 
-        print(f"ValueError: {ve}") 
+        logger.error(f"ValueError: {ve}") 
         return redirect("sobaka:all_humans") 
 
     except StripeError as se: 
-        print(f"Stripe Error: {se}") 
+        logger.error(f"Stripe Error: {se}") 
         return redirect("sobaka:all_humans")  
 
     except Exception as e: 
-        print(f"Unexpected error: {e}") 
+        logger.critical(f"Unexpected error: {e}") 
         return redirect("sobaka:all_humans")
 
 def send_email(request, order_id):

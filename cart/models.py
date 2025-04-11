@@ -25,5 +25,5 @@ class CartItem(models.Model):
         return self.product.price * self.duration
     
     def __str__(self):
-        return self.product
+        return f"{self.product.name} (Duration: {self.duration} hours)"
 1
