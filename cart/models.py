@@ -15,14 +15,13 @@ class Cart(models.Model):
 class CartItem(models.Model):
     product = models.ForeignKey(Human, on_delete=models.CASCADE)
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
-    quantity = models.IntegerField()
     duration = models.IntegerField(default=1)  # New field for booking duration (in hours)
     active = models.BooleanField(default=True)
     class Meta:
         db_table = 'CartItem'
 
     def sub_total(self):
-        return self.product.price * self.quantity
+        return self.product.price * self.duration
     
     def __str__(self):
         return self.product

@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load static %}
 {% block metadescription %}
-    {{ human.description|truncatewords:155 }}
+    {{ human.name|truncatewords:155 }}
 {% endblock %}
 {% block title %}
     {{ human.name }} - Sobaka Model Agency

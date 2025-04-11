@@ -15,21 +15,8 @@ def _cart_id(request):
         cart = request.session.create()
     return cart
 
-def update_duration(request, human_id):
-    cart = Cart.objects.get(cart_id=_cart_id(request))
-    product = get_object_or_404(Human, id=human_id)  # Ensure this works with UUID
-    try:
-        cart_item = CartItem.objects.get(product=product, cart=cart)
-        new_duration = int(request.POST.get('duration', cart_item.duration))  # Get new duration from POST data
-        cart_item.duration = new_duration
-        cart_item.save()
-    except CartItem.DoesNotExist:
-        pass
-    return redirect('cart:cart_detail')
-
 def add_cart(request, human_id):
     product = Human.objects.get(id=human_id)
-    duration = int(request.POST.get('duration', 1))  # Get duration from POST data (default to 1 hour)
     try:
         cart = Cart.objects.get(cart_id=_cart_id(request))
     except Cart.DoesNotExist: 
@@ -37,12 +24,12 @@ def add_cart(request, human_id):
         cart.save()
     try:
         cart_item = CartItem.objects.get(product=product, cart=cart)
-        if (cart_item.quantity < cart_item.product.available):
-            cart_item.quantity += 1
-            cart_item.duration = duration  # Update duration
+        # Increment duration
+        cart_item.duration += 1  # Increment duration by 1 hour
         cart_item.save()
     except CartItem.DoesNotExist:
-        cart_item = CartItem.objects.create(product=product, quantity=1, duration=duration, cart=cart)
+        # Create a new cart item with a default duration of 1 hour
+        cart_item = CartItem.objects.create(product=product, duration=1, cart=cart)
     return redirect('cart:cart_detail')
 
 def cart_detail(request, total=0, counter=0, cart_items=None):
@@ -55,8 +42,8 @@ def cart_detail(request, total=0, counter=0, cart_items=None):
         # Calculate the total price and item count
         for cart_item in cart_items:
             # Include duration in the total price calculation
-            total += (cart_item.product.price * cart_item.quantity * cart_item.duration)
-            counter += cart_item.quantity
+            total += (cart_item.product.price * cart_item.duration)
+            counter += cart_item.duration
     except ObjectDoesNotExist:
         pass
 
@@ -106,11 +93,11 @@ def cart_detail(request, total=0, counter=0, cart_items=None):
     })
 
 def cart_remove(request, human_id):
-    cart= Cart.objects.get(cart_id=_cart_id(request))
+    cart = Cart.objects.get(cart_id=_cart_id(request))
     product = get_object_or_404(Human, id=human_id)
     cart_item = CartItem.objects.get(product=product, cart=cart)
-    if cart_item.quantity > 1:
-        cart_item.quantity -= 1
+    if cart_item.duration > 1:
+        cart_item.duration -= 1  # Decrement duration by 1 hour
         cart_item.save()
     else:
         cart_item.delete()
@@ -189,9 +176,8 @@ def create_order(request):
             try: 
                 oi = OrderItem.objects.create( 
                     product=item.product.name, 
-                    quantity=item.quantity, 
+                    duration=item.duration, 
                     price=item.product.price, 
-                    duration=item.duration,  # Include duration
                     order=order_details 
                 ) 
                 oi.save() 

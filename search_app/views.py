@@ -17,6 +17,20 @@ class SearchResultsListView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super(SearchResultsListView, self).get_context_data(**kwargs)
-        context['query'] = self.request.GET.get('q')
-        context['attribute'] = self.request.GET.get('attribute', 'name')
+        query = self.request.GET.get('q')
+        attribute = self.request.GET.get('attribute', 'name')
+        attribute_labels = {
+            'name': 'Name',
+            'category__name': 'Category',
+            'height': 'Height',
+            'bust_size': 'Bust Size',
+            'hip_size': 'Hip Size',
+            'waist_size': 'Waist Size',
+            'shoe_size': 'Shoe Size',
+            'eye_color': 'Eye Color',
+            'hair_color': 'Hair Color',
+        }
+        context['query'] = query
+        context['attribute'] = attribute
+        context['attribute_label'] = attribute_labels.get(attribute, attribute.title())  # Resolve the label
         return context
