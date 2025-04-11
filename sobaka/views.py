@@ -10,17 +10,21 @@ def hum_list(request, category_id=None):
         category = get_object_or_404(Category, id=category_id)
         humans = Human.objects.filter(category=category, available=True)
 
-    paginator = Paginator(humans, 15)
+    paginator = Paginator(humans, 6)  # Set the number of items per page
     try:
-        page = int(request.GET.get('page', '1'))
-    except:
-        page = 1
+        page = int(request.GET.get('page', '1'))  # Get the current page number
+    except ValueError:
+        page = 1  # Default to page 1 if the page parameter is invalid
     try:
-        humans = paginator.page(page)
-    except (EmptyPage,InvalidPage):
-        humans = paginator.page(paginator.num_pages)
+        humans = paginator.page(page)  # Get the humans for the current page
+    except (EmptyPage, InvalidPage):
+        humans = paginator.page(paginator.num_pages)  # Show the last page if the page is out of range
 
-    return render(request, 'sobaka/category.html',{'category':category, 'hums':humans})
+    return render(request, 'sobaka/category.html', {
+        'category': category,
+        'hums': humans,
+        'page': page,  # Pass the current page to the template
+    })
     
 
 def human_detail(request, category_id, human_id):

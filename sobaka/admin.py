@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Category, Human
+from .models import Category, Human, UnavailableDate
 
 class CategoryAdmin(admin.ModelAdmin):
     list_display = ['name']
@@ -12,3 +12,9 @@ class HumanAdmin(admin.ModelAdmin):
     list_per_page = 20
 
 admin.site.register(Human, HumanAdmin)
+
+class UnavailableDateAdmin(admin.ModelAdmin):
+    list_display = ['human', 'date']
+    list_editable = ['date']
+
+admin.site.register(UnavailableDate, UnavailableDateAdmin)

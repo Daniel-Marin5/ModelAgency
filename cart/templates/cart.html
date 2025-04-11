@@ -7,6 +7,11 @@
     Sobaka Model Agency - Booking
 {% endblock %}
 {% block content %}
+<!-- Include Flatpickr CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
+<!-- Include Flatpickr JS -->
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     {% if not cart_items %}
         <div>
             <div class="text-center">
@@ -54,6 +59,22 @@
                                 Session Price: €{{ cart_item.product.price }}
                                 <br>
                                 Duration (hours): {{ cart_item.duration }}
+                                <br>
+                                <!-- Calendar Widget -->
+                                <form method="post" action="{% url 'cart:select_date' %}">
+                                    {% csrf_token %}
+                                    <input id="booking-date-{{ cart_item.product.id }}" 
+                                        name="booking_date" 
+                                        type="text" 
+                                        class="form-control mt-2" 
+                                        placeholder="Select a date" 
+                                        required 
+                                        data-id="{{ cart_item.product.id }}">
+                                    <button type="submit" class="btn btn-secondary btn-sm mt-2">Confirm Date</button>
+                                </form>
+                                {% if cart_item.selected_date %}
+                                    <p class="mt-2">Selected Date: {{ cart_item.selected_date }}</p>
+                                {% endif %}
                             </td>
                             <td>
                                 €{{ cart_item.sub_total }}
@@ -89,24 +110,57 @@
                 <table class="table my_custom_table">
                     <thead class="my_custom_thead">
                         <tr>
-                            <th>
+                            <th colspan="4">
                                 Checkout
                             </th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td>
+                            <td colspan="4">
                                 Please review your booking before proceeding with the order payment.
                             </td>
                         </tr>
+                        {% if voucher %}
+                        <tr class="subtotal">
+                            <td>Total</td>
+                            <td colspan="2"></td>
+                            <td class="num">€{{ total|floatformat:"2" }}</td>
+                        </tr>
                         <tr>
-                            <td class="text-left">
-                                Your total is: <strong>€{{ total }}</strong>
+                            <td>
+                                "{{ voucher.code }}" voucher
+                                ({{ voucher.discount }}% off)
+                            </td>
+                            <td colspan="2"></td>
+                            <td class="num neg">
+                                - €{{ discount|floatformat:"2" }}
                             </td>
                         </tr>
+                        <tr class="total">
+                            <td>Total</td>
+                            <td colspan="2"></td>
+                            <td class="num">
+                                €{{ new_total|floatformat:"2" }}
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr class="total">
+                            <td>Total</td>
+                            <td colspan="2"></td>
+                            <td class="num">
+                                €{{ total|floatformat:"2" }}
+                            </td>
+                        </tr>
+                        {% endif %}              
                     </tbody>
                 </table>
+                <p>Apply a voucher:</p>
+                <form action="{% url 'vouchers:apply' %}" method="post">
+                    {{ voucher_apply_form }}
+                    <input class="btn btn-secondary btn-block my_custom_button" type="submit" value="Apply">
+                    {% csrf_token %}
+                </form>
                 <!-- Payment Form --> 
                 <form action="{% url 'cart:cart_detail' %}" method="POST"> 
                     {% csrf_token %} 
@@ -124,4 +178,37 @@
         </div>
         <br>
     {% endif %}
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+        console.log('Initializing Flatpickr...');
+        document.querySelectorAll('input[id^="booking-date-"]').forEach(function (input) {
+            console.log('Initializing Flatpickr for input:', input);
+            const humanId = input.getAttribute('data-id');
+    
+            fetch(`/cart/unavailable_dates/${humanId}/`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(unavailableDates => {
+                    console.log('Unavailable dates:', unavailableDates);
+                    flatpickr(input, {
+                        minDate: "today",
+                        maxDate: new Date().fp_incr(14),
+                        dateFormat: "Y-m-d",
+                        disable: unavailableDates.map(date => new Date(date)),
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching unavailable dates:', error);
+                    alert('Could not load unavailable dates. Please try again later.');
+                });
+        });
+    });
+    </script>
+    
 {% endblock %}
+

@@ -1,6 +1,7 @@
 from django.db import models
 import uuid
 from django.urls import reverse
+from datetime import date
 
 def upload_to_human(instance, filename):
     return f'human/{instance.name}/{filename}'
@@ -24,6 +25,13 @@ class Category(models.Model):
 
     def __str__(self):
         return self.name
+
+class UnavailableDate(models.Model):
+    human = models.ForeignKey('Human', on_delete=models.CASCADE, related_name='unavailable_dates')
+    date = models.DateField()
+
+    def __str__(self):
+        return f"{self.human.name} - {self.date}"
 
 class Human(models.Model):
     id = models.UUIDField(
@@ -54,6 +62,9 @@ class Human(models.Model):
 
     def get_absolute_url(self):
         return reverse('sobaka:human_detail', args=[self.category.id, self.id])
+
+    def is_available_on(self, booking_date):
+        return not self.unavailable_dates.filter(date=booking_date).exists()
 
     def __str__(self):
         return self.name

@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'sobaka',
     'search_app',
     'cart',
+    'vouchers',
     'order',
     #3rd party
     'crispy_forms',
@@ -152,3 +153,7 @@ CRISPY_TEMPLATE_PACK = 'bootstrap5'
 
 STRIPE_SECRET_KEY ='sk_test_51QKUzGF22nUUQqfKHUJ3uMdSkvgLQ53BbZdjfaaYWadglTQNtNPk5x5KGRI1dXSt2oQQL1aXaTpUxARkYxp63ZtM00xa4roK5k'
 STRIPE_PUBLISHABLE_KEY = 'pk_test_51QKUzGF22nUUQqfKuSjovmxhE5CfriuEeHpEAX4KY0EmiW7jo7Lz909apHOjuRS4HfQ7w8MPk0eqfaH5J22lasB800hOoXimVH'
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'localhost' # MailHog listens on localhost
+EMAIL_PORT = 1025 # Default MailHog SMTP port
