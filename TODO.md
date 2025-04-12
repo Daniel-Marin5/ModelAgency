@@ -12,7 +12,7 @@ ig/facebook/twitter dummy links footer + model pages
 security on thank you page/http address
 
 
-
+settings deploy replace * allowed hosts
 
 
 
