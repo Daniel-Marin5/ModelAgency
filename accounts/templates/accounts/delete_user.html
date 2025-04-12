@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Delete User{% endblock %}
+{% block content %}
+<div class="container">
+    <br>
+    <h1>Are you sure you want to delete the user "{{ account.username }}"?</h1>
+    <br>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Delete</button>
+        <a href="{% url 'accounts:profile' %}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock %}

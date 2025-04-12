@@ -68,10 +68,7 @@
                         </form>
                     </td>
                     <td>
-                        <form method="post" action="{% url 'accounts:delete_user' account.id %}">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
-                        </form>
+                        <a href="{% url 'accounts:delete_user' account.id %}" class="btn btn-danger btn-sm">Delete</a>
                     </td>
                 </tr>
                 {% endfor %}
@@ -110,70 +107,76 @@
         <a href="{% url 'vouchers:add_voucher' %}" class="btn btn-secondary">Add New Voucher</a>
     </div>
     <br>
+    <div class="text-center">
+        <a href="{% url 'accounts:view_bookings' %}" class="btn btn-secondary">View All Bookings</a>
+    </div>
+    <br>
     {% endif %}
-    <h2 class="my_title">Booking History</h2>
-    {% if orders %}
-        <table class="table my_custom_table">
-            <thead class="my_custom_thead">
-                <tr>
-                    <th>Order ID</th>
-                    <th>Date</th>
-                    <th>Total (€)</th>
-                    <th>Details</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for order in orders %}
-                <tr>
-                    <td>{{ order.id }}</td>
-                    <td>{{ order.created|date:"Y-m-d" }}</td>
-                    <td>€{{ order.total }}</td>
-                    <td>
-                        <button class="btn btn-secondary btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#order-{{ order.id }}" aria-expanded="false" aria-controls="order-{{ order.id }}">
-                            View Details
-                        </button>
-                    </td>
-                </tr>
-                <tr class="collapse" id="order-{{ order.id }}">
-                    <td colspan="4">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>Model</th>
-                                    <th>Duration (hours)</th>
-                                    <th>Date Booked</th>
-                                    <th>Rate (€)</th>
-                                    <th>Total (€)</th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for item in order.orderitem_set.all %}
-                                <tr>
-                                    <td>{{ item.product }}</td>
-                                    <td>{{ item.duration }}</td>
-                                    <td>{{ item.booked_date|date:"Y-m-d" }}</td>
-                                    <td>€{{ item.price }}</td>
-                                    <td>€{{ item.sub_total }}</td>
-                                    <td>
-                                        {% if not item.reviewed %}
-                                            <a href="{% url 'sobaka:leave_review' item.id %}" class="btn btn-secondary btn-sm">Leave Review</a>
-                                        {% else %}
-                                            <span class="text-muted">Reviewed</span>
-                                        {% endif %}
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    {% else %}
-        <p>You have no booking history.</p>
+    {% if not user.permissions %}
+        <h2 class="my_title">Booking History</h2>
+            {% if orders %}
+                <table class="table my_custom_table">
+                    <thead class="my_custom_thead">
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Date</th>
+                            <th>Total (€)</th>
+                            <th>Details</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for order in orders %}
+                        <tr>
+                            <td>{{ order.id }}</td>
+                            <td>{{ order.created|date:"Y-m-d" }}</td>
+                            <td>€{{ order.total }}</td>
+                            <td>
+                                <button class="btn btn-secondary btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#order-{{ order.id }}" aria-expanded="false" aria-controls="order-{{ order.id }}">
+                                    View Details
+                                </button>
+                            </td>
+                        </tr>
+                        <tr class="collapse" id="order-{{ order.id }}">
+                            <td colspan="4">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Model</th>
+                                            <th>Duration (hours)</th>
+                                            <th>Date Booked</th>
+                                            <th>Rate (€)</th>
+                                            <th>Total (€)</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for item in order.orderitem_set.all %}
+                                        <tr>
+                                            <td>{{ item.product }}</td>
+                                            <td>{{ item.duration }}</td>
+                                            <td>{{ item.booked_date|date:"Y-m-d" }}</td>
+                                            <td>€{{ item.price }}</td>
+                                            <td>€{{ item.sub_total }}</td>
+                                            <td>
+                                                {% if not item.reviewed %}
+                                                    <a href="{% url 'sobaka:leave_review' item.id %}" class="btn btn-secondary btn-sm">Leave Review</a>
+                                                {% else %}
+                                                    <span class="text-muted">Reviewed</span>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p>You have no booking history.</p>
+            {% endif %}
     {% endif %}
-</div>
-<br>
+            </div>
+            <br>
 {% endblock %}

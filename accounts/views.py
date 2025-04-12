@@ -8,10 +8,10 @@ from .models import CustomUser
 from django.contrib.auth.mixins import LoginRequiredMixin
 from order.models import Order, OrderItem
 from sobaka.models import Human
-from django.shortcuts import redirect, get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from vouchers.models import Voucher
-
+from django.core.paginator import Paginator
 
 class SignUpView(CreateView):
     model = CustomUser
@@ -65,6 +65,25 @@ def delete_user(request, user_id):
 
     User = get_user_model()
     account = get_object_or_404(User, id=user_id)
+
     if request.method == 'POST':
         account.delete()
-    return redirect('accounts:profile')
+        return redirect('accounts:profile')  # Redirect after deletion
+
+    # Render the confirmation page for GET requests
+    return render(request, 'accounts/delete_user.html', {'account': account})
+
+@login_required
+def view_bookings(request):
+    if not request.user.permissions:
+        return redirect('accounts:profile')  # Redirect if the user doesn't have permissions
+
+    # Fetch all orders
+    orders = Order.objects.all().order_by('-created')
+
+    # Paginate the orders (20 rows per page)
+    paginator = Paginator(orders, 20)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'accounts/view_bookings.html', {'page_obj': page_obj})

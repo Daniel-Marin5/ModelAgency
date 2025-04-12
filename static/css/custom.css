@@ -428,3 +428,22 @@ body.dark-mode form p select option {
 body.dark-mode form p select option:hover {
     background-color: #555555 !important; /* Highlighted option background */
 }
+
+/* Dark mode styles for pagination */
+body.dark-mode .pagination-container .pagination-buttons .paginator-btn {
+    background-color: #333333 !important; /* Dark background */
+    color: #ffffff !important; /* White text */
+    border: 1px solid #444444 !important; /* Border color */
+    margin: 0 5px; /* Add spacing between buttons */
+}
+
+body.dark-mode .pagination-container .pagination-buttons .paginator-btn:hover {
+    background-color: #444444 !important; /* Slightly lighter background on hover */
+    border-color: #555555 !important; /* Highlighted border on hover */
+}
+
+body.dark-mode .pagination-container .pagination-buttons .paginator-btn.active {
+    background-color: #555555 !important; /* Highlighted background for active button */
+    color: #ffffff !important; /* White text for active button */
+    border-color: #666666 !important; /* Border for active button */
+}

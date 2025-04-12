@@ -4,6 +4,7 @@ from .models import Category, Human, Review
 from django.core.paginator import Paginator, EmptyPage, InvalidPage
 from order.models import OrderItem
 from .forms import ReviewForm, HumanForm
+from django.core.paginator import Paginator
 
 def hum_list(request, category_id=None):
     category = None

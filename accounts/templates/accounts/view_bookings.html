@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}View All Bookings{% endblock %}
+{% block content %}
+<div class="container">
+    <br>
+    <h1 class="my_title">All Bookings</h1>
+    <br>
+    {% if page_obj %}
+        <table class="table my_custom_table">
+            <thead class="my_custom_thead">
+                <tr>
+                    <th>Order ID</th>
+                    <th>Email</th>
+                    <th>Date</th>
+                    <th>Total (€)</th>
+                    <th>Details</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in page_obj %}
+                <tr>
+                    <td>{{ order.id }}</td>
+                    <td>{{ order.emailAddress }}</td>
+                    <td>{{ order.created|date:"Y-m-d" }}</td>
+                    <td>€{{ order.total }}</td>
+                    <td>
+                        <button class="btn btn-secondary btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#order-{{ order.id }}" aria-expanded="false" aria-controls="order-{{ order.id }}">
+                            View Details
+                        </button>
+                    </td>
+                </tr>
+                <tr class="collapse" id="order-{{ order.id }}">
+                    <td colspan="5">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Model</th>
+                                    <th>Duration (hours)</th>
+                                    <th>Date Booked</th>
+                                    <th>Rate (€)</th>
+                                    <th>Total (€)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in order.orderitem_set.all %}
+                                <tr>
+                                    <td>{{ item.product }}</td>
+                                    <td>{{ item.duration }}</td>
+                                    <td>{{ item.booked_date|date:"Y-m-d" }}</td>
+                                    <td>€{{ item.price }}</td>
+                                    <td>€{{ item.sub_total }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="pagination-container mx-auto">
+            {% if page_obj.paginator.num_pages > 1 %}
+                <hr>
+                <div class="text-center pagination-buttons">
+                    {% if page_obj.has_previous %}
+                        <a href="?page={{ page_obj.previous_page_number }}" class="btn btn-secondary btn-sm paginator-btn pagination-prev">Previous</a>
+                    {% endif %}
+                    {% for pg in page_obj.paginator.page_range %}
+                        <a href="?page={{ pg }}" class="btn btn-secondary btn-sm paginator-btn pagination-page {% if page_obj.number == pg %}active{% endif %}">{{ pg }}</a>
+                    {% endfor %}
+                    {% if page_obj.has_next %}
+                        <a href="?page={{ page_obj.next_page_number }}" class="btn btn-secondary btn-sm paginator-btn pagination-next">Next</a>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+        <br>
+    {% else %}
+        <p>No bookings found.</p>
+    {% endif %}
+</div>
+<div class="text-center">
+    <a href="{% url 'accounts:profile' %}" class="btn btn-secondary">Back</a>
+</div>
+<br>
+{% endblock %}
