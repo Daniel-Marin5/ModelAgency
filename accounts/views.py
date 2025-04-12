@@ -2,12 +2,14 @@ from django.views.generic.edit import CreateView
 from django.views.generic import TemplateView
 from django.urls import reverse_lazy
 from django.contrib.auth.models import Group
-from django.contrib.auth import login
+from django.contrib.auth import login, get_user_model
 from .forms import CustomUserCreationForm
 from .models import CustomUser
 from django.contrib.auth.mixins import LoginRequiredMixin
 from order.models import Order, OrderItem
 from sobaka.models import Human
+from django.shortcuts import redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
 
 
 class SignUpView(CreateView):
@@ -38,4 +40,30 @@ class ProfileView(LoginRequiredMixin, TemplateView):
         # Fetch all models if the user has permissions
         if user.permissions:
             context['humans'] = Human.objects.all()
+            User = get_user_model()
+            # Exclude the currently logged-in user from the accounts list
+            context['accounts'] = User.objects.exclude(id=user.id)
         return context
+        
+@login_required
+def toggle_permissions(request, user_id):
+    if not request.user.permissions:
+        return redirect('accounts:profile')  # Redirect if the user doesn't have permissions
+
+    User = get_user_model()
+    account = get_object_or_404(User, id=user_id)
+    if request.method == 'POST':
+        account.permissions = not account.permissions
+        account.save()
+    return redirect('accounts:profile')
+
+@login_required
+def delete_user(request, user_id):
+    if not request.user.permissions:
+        return redirect('accounts:profile')  # Redirect if the user doesn't have permissions
+
+    User = get_user_model()
+    account = get_object_or_404(User, id=user_id)
+    if request.method == 'POST':
+        account.delete()
+    return redirect('accounts:profile')

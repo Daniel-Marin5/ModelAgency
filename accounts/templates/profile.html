@@ -12,9 +12,10 @@
     <h1 class="my_title text-center">Your Account</h1>
     <br>
     {% if user.permissions %}
-    <h2 class="my_title">Admin Functions</h2>
+    <h2>Admin Functions</h2>
+    <br>
     <div>
-        <h3>Manage Models</h3>
+        <h3 class="my_title">Manage Models</h3>
         <table class="table my_custom_table">
             <thead class="my_custom_thead">
                 <tr>
@@ -40,7 +41,42 @@
                 {% endfor %}
             </tbody>
         </table>
-        <a href="{% url 'sobaka:add_human' %}" class="btn btn-primary">Add New Model</a>
+        <a href="{% url 'sobaka:add_human' %}" class="btn btn-secondary">Add New Model</a>
+    </div>
+    <br>
+    <br>
+    <h2 class="my_title">Manage User Accounts</h2>
+    <div>
+        <table class="table my_custom_table">
+            <thead class="my_custom_thead">
+                <tr>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Permissions</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for account in accounts %}
+                <tr>
+                    <td>{{ account.username }}</td>
+                    <td>{{ account.email }}</td>
+                    <td>
+                        <form method="post" action="{% url 'accounts:toggle_permissions' account.id %}">
+                            {% csrf_token %}
+                            <input type="checkbox" name="permissions" {% if account.permissions %}checked{% endif %} onchange="this.form.submit()">
+                        </form>
+                    </td>
+                    <td>
+                        <form method="post" action="{% url 'accounts:delete_user' account.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
     <br>
     {% endif %}
