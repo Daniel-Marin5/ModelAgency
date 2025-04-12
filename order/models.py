@@ -17,12 +17,12 @@ verbose_name='Email Address')
     shippingPostcode = models.CharField(max_length=10, blank=True)
     shippingCountry = models.CharField(max_length=200, blank=True)
     
-class Meta:
-    db_table = 'Order'
-    ordering = ['-created']
+    class Meta:
+        db_table = 'Order'
+        ordering = ['-created']
 
-def __str__(self):
-    return str(self.id)
+    def __str__(self):
+        return str(self.id)
 
 class OrderItem(models.Model):
     product = models.CharField(max_length=250)
