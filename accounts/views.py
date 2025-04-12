@@ -7,6 +7,7 @@ from .forms import CustomUserCreationForm
 from .models import CustomUser
 from django.contrib.auth.mixins import LoginRequiredMixin
 from order.models import Order, OrderItem
+from sobaka.models import Human
 
 
 class SignUpView(CreateView):
@@ -30,7 +31,11 @@ class ProfileView(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        user = self.request.user
         # Fetch the user's orders
-        user_orders = Order.objects.filter(emailAddress=self.request.user.email).order_by('-created')
+        user_orders = Order.objects.filter(emailAddress=user.email).order_by('-created')
         context['orders'] = user_orders
+        # Fetch all models if the user has permissions
+        if user.permissions:
+            context['humans'] = Human.objects.all()
         return context

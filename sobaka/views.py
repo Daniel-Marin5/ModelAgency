@@ -1,9 +1,9 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from .models import Category, Human, Review
 from django.core.paginator import Paginator, EmptyPage, InvalidPage
 from order.models import OrderItem
-from .forms import ReviewForm
+from .forms import ReviewForm, HumanForm
 
 def hum_list(request, category_id=None):
     category = None
@@ -56,3 +56,37 @@ def leave_review(request, order_item_id):
         form = ReviewForm()
 
     return render(request, 'sobaka/leave_review.html', {'form': form, 'human': human})
+
+def is_admin(user):
+    return user.is_authenticated and user.permissions
+
+@user_passes_test(is_admin)
+def add_human(request):
+    if request.method == 'POST':
+        form = HumanForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('accounts:profile')
+    else:
+        form = HumanForm()
+    return render(request, 'sobaka/add_human.html', {'form': form})
+
+@user_passes_test(is_admin)
+def edit_human(request, human_id):
+    human = get_object_or_404(Human, id=human_id)
+    if request.method == 'POST':
+        form = HumanForm(request.POST, request.FILES, instance=human)
+        if form.is_valid():
+            form.save()
+            return redirect('accounts:profile')
+    else:
+        form = HumanForm(instance=human)
+    return render(request, 'sobaka/edit_human.html', {'form': form, 'human': human})
+
+@user_passes_test(is_admin)
+def delete_human(request, human_id):
+    human = get_object_or_404(Human, id=human_id)
+    if request.method == 'POST':
+        human.delete()
+        return redirect('accounts:profile')
+    return render(request, 'sobaka/delete_human.html', {'human': human})

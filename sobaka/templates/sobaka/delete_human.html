@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Delete Model{% endblock %}
+{% block content %}
+<div class="container">
+    <h1>Are you sure you want to delete {{ human.name }}?</h1>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Delete</button>
+        <a href="{% url 'accounts:profile' %}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock %}
