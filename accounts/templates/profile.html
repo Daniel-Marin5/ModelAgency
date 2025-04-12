@@ -45,6 +45,7 @@
                                     <th>Date Booked</th>
                                     <th>Rate (€)</th>
                                     <th>Total (€)</th>
+                                    <th></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -55,6 +56,13 @@
                                     <td>{{ item.booked_date|date:"Y-m-d" }}</td>
                                     <td>€{{ item.price }}</td>
                                     <td>€{{ item.sub_total }}</td>
+                                    <td>
+                                        {% if not item.reviewed %}
+                                            <a href="{% url 'sobaka:leave_review' item.id %}" class="btn btn-secondary btn-sm">Leave Review</a>
+                                        {% else %}
+                                            <span class="text-muted">Reviewed</span>
+                                        {% endif %}
+                                    </td>
                                 </tr>
                                 {% endfor %}
                             </tbody>

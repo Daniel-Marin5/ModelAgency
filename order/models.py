@@ -27,9 +27,10 @@ verbose_name='Email Address')
 class OrderItem(models.Model):
     product = models.CharField(max_length=250)
     price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Euro Price')
-    duration = models.IntegerField(default=1)  # New field for booking duration (in hours)
-    booked_date = models.DateField(null=True, blank=True)  # Add booked date
+    duration = models.IntegerField(default=1)  # Booking duration (in hours)
+    booked_date = models.DateField(null=True, blank=True)  # Booked date
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    reviewed = models.BooleanField(default=False)  # New field to track if a review has been left
 
     class Meta:
         db_table = 'OrderItem'

@@ -2,8 +2,10 @@
 {% block title %}Leave a Review{% endblock %}
 {% block content %}
 <div class="container">
+    <br>
     <h1>Leave a Review for {{ human.name }}</h1>
-    <form method="post">
+    <br>
+    <form method="post" class="review-form">
         {% csrf_token %}
         {{ form.as_p }}
         <button type="submit" class="btn btn-secondary">Submit Review</button>

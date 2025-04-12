@@ -1,6 +1,9 @@
-from django.shortcuts import render, get_object_or_404
-from .models import Category, Human
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from .models import Category, Human, Review
 from django.core.paginator import Paginator, EmptyPage, InvalidPage
+from order.models import OrderItem
+from .forms import ReviewForm
 
 def hum_list(request, category_id=None):
     category = None
@@ -30,3 +33,26 @@ def hum_list(request, category_id=None):
 def human_detail(request, category_id, human_id):
     human = get_object_or_404(Human, category_id=category_id, id=human_id)
     return render(request, 'sobaka/human.html', {'human':human})
+
+@login_required
+def leave_review(request, order_item_id):
+    order_item = get_object_or_404(OrderItem, id=order_item_id, order__emailAddress=request.user.email)
+    human = get_object_or_404(Human, name=order_item.product)
+
+    if order_item.reviewed:
+        return redirect(human.get_absolute_url())  # Redirect if already reviewed
+
+    if request.method == 'POST':
+        form = ReviewForm(request.POST)
+        if form.is_valid():
+            review = form.save(commit=False)
+            review.human = human
+            review.user = request.user
+            review.save()
+            order_item.reviewed = True
+            order_item.save()
+            return redirect(human.get_absolute_url())
+    else:
+        form = ReviewForm()
+
+    return render(request, 'sobaka/leave_review.html', {'form': form, 'human': human})

@@ -68,3 +68,16 @@ class Human(models.Model):
 
     def __str__(self):
         return self.name
+
+class Review(models.Model):
+    human = models.ForeignKey(Human, on_delete=models.CASCADE, related_name='reviews')
+    user = models.ForeignKey('accounts.CustomUser', on_delete=models.CASCADE)
+    rating = models.IntegerField(choices=[(i, i) for i in range(1, 6)])  # Rating from 1 to 5
+    comment = models.TextField(blank=True)
+    created = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created']
+
+    def __str__(self):
+        return f"Review for {self.human.name} by {self.user.username}"

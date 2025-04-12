@@ -53,6 +53,26 @@
                             {% endif %}
                         {% endif %}
                     </div>
+                    <br>
+                    <br>
+                    <div>
+                        <h3>Reviews</h3>
+                        {% if human.reviews.exists %}
+                            <ul>
+                                {% for review in human.reviews.all|slice:":3" %}
+                                    <li>
+                                        <strong>{{ review.user.username }}</strong> ({{ review.created|date:"Y-m-d" }})
+                                        <br>
+                                        Rating: {{ review.rating }}/5
+                                        <br>
+                                        {{ review.comment }}
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <p>No reviews yet. Be the first to leave a review!</p>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
         </div>

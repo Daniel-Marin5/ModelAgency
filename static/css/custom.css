@@ -403,3 +403,28 @@ body.dark-mode div#id_password1_helptext,
 body.dark-mode div#id_password2_helptext {
     color: #ffffff !important;
 }
+
+/* Dark mode styles for select, option, and textarea */
+body.dark-mode form p select,
+body.dark-mode form p textarea {
+    background-color: #444444 !important; /* Same as the search box */
+    color: #ffffff !important; /* White text for readability */
+    border: 1px solid #555555 !important; /* Border color for consistency */
+}
+
+body.dark-mode form p select:focus,
+body.dark-mode form p textarea:focus {
+    background-color: #555555 !important; /* Slightly lighter background on focus */
+    color: #ffffff !important;
+    border-color: #666666 !important; /* Highlighted border on focus */
+    box-shadow: none !important; /* Remove default focus shadow */
+}
+
+body.dark-mode form p select option {
+    background-color: #444444 !important; /* Dropdown options background */
+    color: #ffffff !important; /* Dropdown options text color */
+}
+
+body.dark-mode form p select option:hover {
+    background-color: #555555 !important; /* Highlighted option background */
+}
