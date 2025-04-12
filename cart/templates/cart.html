@@ -63,13 +63,14 @@
                                 <!-- Calendar Widget -->
                                 <form method="post" action="{% url 'cart:select_date' %}">
                                     {% csrf_token %}
-                                    <input id="booking-date-{{ cart_item.product.id }}" 
-                                        name="booking_date" 
-                                        type="text" 
-                                        class="form-control mt-2" 
-                                        placeholder="Select a date" 
-                                        required 
-                                        data-id="{{ cart_item.product.id }}">
+                                    <input type="hidden" name="cart_item_id" value="{{ cart_item.id }}">  <!-- Pass the cart item ID -->
+                                    <input id="booking-date-{{ cart_item.id }}" 
+                                           name="booking_date" 
+                                           type="text" 
+                                           class="form-control mt-2" 
+                                           placeholder="Select a date"
+                                           data-id="{{ cart_item.product.id }}"" 
+                                           required>
                                     <button type="submit" class="btn btn-secondary btn-sm mt-2">Confirm Date</button>
                                 </form>
                                 {% if cart_item.selected_date %}
@@ -184,8 +185,13 @@
         console.log('Initializing Flatpickr...');
         document.querySelectorAll('input[id^="booking-date-"]').forEach(function (input) {
             console.log('Initializing Flatpickr for input:', input);
-            const humanId = input.getAttribute('data-id');
-    
+            const humanId = input.getAttribute('data-id');  // Get the human ID from the data-id attribute
+
+            if (!humanId) {
+                console.error('Human ID is null or undefined for input:', input);
+                return;  // Skip this input if humanId is not set
+            }
+
             fetch(`/cart/unavailable_dates/${humanId}/`)
                 .then(response => {
                     if (!response.ok) {

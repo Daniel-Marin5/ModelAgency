@@ -16,11 +16,13 @@
             {% if customer_order %}
             <p>Order ID: {{ customer_order.id }}</p>
             <p>Total: €{{ customer_order.total }}</p>
+            <br>
             <p>Billing Name: {{ customer_order.billingName }}</p>
             <p>Billing Address: {{ customer_order.billingAddress1 }}, {{ customer_order.billingCity }}, {{ customer_order.billingPostcode }}, {{ customer_order.billingCountry }}</p>
             <p>Shipping Name: {{ customer_order.shippingName }}</p>
             <p>Shipping Address: {{ customer_order.shippingAddress1 }}, {{ customer_order.shippingCity }}, {{ customer_order.shippingPostcode }}, {{ customer_order.shippingCountry }}</p>
-            
+            <br>
+            <br>
             <h2 class="my_title">Order Details</h2>
             <table class="table my_custom_table">
                 <thead>
@@ -28,7 +30,8 @@
                         <th>Model</th>
                         <th>Duration (hours)</th>
                         <th>Date Booked</th>
-                        <th>Price (€)</th>
+                        <th>Rate (€)</th>
+                        <th>Total (€)</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -38,6 +41,7 @@
                         <td>{{ item.duration }}</td>
                         <td>{{ item.booked_date|date:"Y-m-d" }}</td>
                         <td>{{ item.price }}</td>
+                        <td>{{ item.sub_total }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>

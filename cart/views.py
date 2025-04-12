@@ -51,27 +51,26 @@ def add_cart(request, human_id):
 
 def select_date(request):
     if request.method == 'POST':
+        cart_item_id = request.POST.get('cart_item_id')  # Get the cart item ID from the form
         booking_date = request.POST.get('booking_date')  # Get the date from the form
-        if booking_date:
+
+        if cart_item_id and booking_date:
             booking_date = date.fromisoformat(booking_date)  # Convert string to date object
-            cart = Cart.objects.get(cart_id=_cart_id(request))
-            cart_items = CartItem.objects.filter(cart=cart, active=True)
+            cart_item = get_object_or_404(CartItem, id=cart_item_id)
 
-            for cart_item in cart_items:
-                human = cart_item.product
-                # Check if the model is available on the selected date
-                if not human.is_available_on(booking_date):
-                    # If not available, show an error message
-                    return render(request, 'cart.html', {
-                        'cart_items': cart_items,
-                        'error': f"{human.name} is not available on {booking_date}. Please select another date.",
-                    })
+            # Check if the model is available on the selected date
+            if not cart_item.product.is_available_on(booking_date):
+                # If not available, show an error message
+                return render(request, 'cart.html', {
+                    'cart_items': CartItem.objects.filter(cart=cart_item.cart, active=True),
+                    'error': f"{cart_item.product.name} is not available on {booking_date}. Please select another date.",
+                })
 
-                # Temporarily store the selected date in the CartItem
-                cart_item.selected_date = booking_date
-                cart_item.save()
+            # Store the selected date in the CartItem
+            cart_item.selected_date = booking_date
+            cart_item.save()
 
-            return redirect('cart:cart_detail')
+        return redirect('cart:cart_detail')
     return redirect('cart:cart_detail')
 
 def get_unavailable_dates(request, human_id):
