@@ -28,13 +28,14 @@ class OrderItem(models.Model):
     product = models.CharField(max_length=250)
     price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Euro Price')
     duration = models.IntegerField(default=1)  # New field for booking duration (in hours)
+    booked_date = models.DateField(null=True, blank=True)  # Add booked date
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
-    
-class Meta:
-    db_table = 'OrderItem'
 
-def sub_total(self):
-    return self.duration * self.price
+    class Meta:
+        db_table = 'OrderItem'
 
-def __str__(self):
-    return self.product
+    def sub_total(self):
+        return self.duration * self.price
+
+    def __str__(self):
+        return self.product

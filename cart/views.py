@@ -284,7 +284,8 @@ def create_order(request):
                 oi = OrderItem.objects.create( 
                     product=item.product.name, 
                     duration=item.duration, 
-                    price=item.product.price, 
+                    price=item.product.price,
+                    booked_date=item.selected_date, 
                     order=order_details 
                 ) 
                 logger.info(f"Order item created: {oi}")

@@ -1,16 +1,17 @@
 from django.contrib import admin
 from .models import Order, OrderItem 
 
-class OrderItemAdmin(admin.TabularInline): 
-    model = OrderItem 
-    fieldsets = [ 
-        ('Product', {'fields': ['product'],}), 
-        ('Duration', {'fields': ['duration'],}),  # Display duration instead of quantity
-        ('Price', {'fields': ['price'],}), 
-    ] 
-    readonly_fields = ['product', 'duration', 'price']  # Make duration readonly
+class OrderItemAdmin(admin.TabularInline):
+    model = OrderItem
+    fieldsets = [
+        ('Product', {'fields': ['product']}),
+        ('Duration', {'fields': ['duration']}),
+        ('Price', {'fields': ['price']}),
+        ('Booked Date', {'fields': ['booked_date']}),  # Add booked date
+    ]
+    readonly_fields = ['product', 'duration', 'price', 'booked_date']  # Make booked_date readonly
     can_delete = False
-    extra = 0  # Prevent extra empty rows from being displayed
+    extra = 0
 
 class OrderAdmin(admin.ModelAdmin): 
     list_display = ['id', 'billingName', 'emailAddress', 'created'] 
