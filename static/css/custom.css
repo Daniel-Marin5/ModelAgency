@@ -350,3 +350,56 @@ body.dark-mode select.form-control option {
 body.dark-mode select.form-control option:hover {
     background-color: #555555 !important;
 }
+
+body.dark-mode .bg-light {
+    background-color: #1f1e22 !important;
+    color: #ffffff !important;
+}
+
+body.dark-mode .text-center, 
+body.dark-mode p {
+    color: #ffffff !important;
+}
+
+body.dark-mode .btn-secondary {
+    background-color: #333333 !important;
+    border-color: #333333 !important;
+    color: #ffffff !important;
+}
+
+body.dark-mode .btn-secondary:hover {
+    background-color: #444444 !important;
+    border-color: #444444 !important;
+}
+
+body.dark-mode .form-control {
+    background-color: #444444 !important;
+    color: #ffffff !important;
+    border: 1px solid #555555 !important;
+}
+
+body.dark-mode .form-control::placeholder {
+    color: #cccccc !important;
+}
+
+body.dark-mode .form-control:focus {
+    background-color: #555555 !important;
+    color: #ffffff !important;
+    border-color: #666666 !important;
+    box-shadow: none !important;
+}
+
+body.dark-mode .errorlist li {
+    color: #ff6b6b !important;
+}
+
+body.dark-mode .form-text,
+body.dark-mode .form-text * {
+    color: #ffffff !important;
+}
+
+body.dark-mode div#id_username_helptext,
+body.dark-mode div#id_password1_helptext,
+body.dark-mode div#id_password2_helptext {
+    color: #ffffff !important;
+}
