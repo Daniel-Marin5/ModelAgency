@@ -10,6 +10,7 @@ from order.models import Order, OrderItem
 from sobaka.models import Human
 from django.shortcuts import redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from vouchers.models import Voucher
 
 
 class SignUpView(CreateView):
@@ -41,10 +42,10 @@ class ProfileView(LoginRequiredMixin, TemplateView):
         if user.permissions:
             context['humans'] = Human.objects.all()
             User = get_user_model()
-            # Exclude the currently logged-in user from the accounts list
             context['accounts'] = User.objects.exclude(id=user.id)
+            context['vouchers'] = Voucher.objects.all()  # Add vouchers to the context
         return context
-        
+
 @login_required
 def toggle_permissions(request, user_id):
     if not request.user.permissions:

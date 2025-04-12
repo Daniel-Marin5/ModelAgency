@@ -14,3 +14,21 @@ class HumanForm(forms.ModelForm):
     class Meta:
         model = Human
         fields = ['name', 'category', 'price', 'image1', 'image2', 'image3', 'image4', 'image5', 'available', 'height', 'shoe_size', 'waist_size', 'bust_size', 'hip_size', 'eye_color', 'hair_color']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control'}),
+            'category': forms.Select(attrs={'class': 'form-control'}),
+            'price': forms.NumberInput(attrs={'class': 'form-control'}),
+            'image1': forms.FileInput(attrs={'class': 'form-control'}),
+            'image2': forms.FileInput(attrs={'class': 'form-control'}),
+            'image3': forms.FileInput(attrs={'class': 'form-control'}),
+            'image4': forms.FileInput(attrs={'class': 'form-control'}),
+            'image5': forms.FileInput(attrs={'class': 'form-control'}),
+            'available': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'height': forms.NumberInput(attrs={'class': 'form-control'}),
+            'shoe_size': forms.NumberInput(attrs={'class': 'form-control'}),
+            'waist_size': forms.NumberInput(attrs={'class': 'form-control'}),
+            'bust_size': forms.NumberInput(attrs={'class': 'form-control'}),
+            'hip_size': forms.NumberInput(attrs={'class': 'form-control'}),
+            'eye_color': forms.TextInput(attrs={'class': 'form-control'}),
+            'hair_color': forms.TextInput(attrs={'class': 'form-control'}),
+        }

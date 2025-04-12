@@ -1,10 +1,10 @@
 {% extends "base.html" %}
 {% load static %}
-{% block title %}Delete Model{% endblock %}
+{% block title %}Delete Voucher{% endblock %}
 {% block content %}
 <div class="container">
     <br>
-    <h1>Are you sure you want to delete {{ human.name }}?</h1>
+    <h1>Are you sure you want to delete the voucher "{{ voucher.code }}"?</h1>
     <br>
     <form method="post">
         {% csrf_token %}

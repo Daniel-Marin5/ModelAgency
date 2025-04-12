@@ -1,12 +1,12 @@
 {% extends "base.html" %}
 {% load static %}
-{% block title %}Add New Model{% endblock %}
+{% block title %}Add Voucher{% endblock %}
 {% block content %}
 <div class="container">
     <br>
-    <h1 class="my_title">Add New Model</h1>
+    <h1 class="my_title">Add New Voucher</h1>
     <br>
-    <form method="post" enctype="multipart/form-data">
+    <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
         <button type="submit" class="btn btn-secondary">Save</button>

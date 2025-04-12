@@ -79,6 +79,37 @@
         </table>
     </div>
     <br>
+    <h2 class="my_title">Manage Vouchers</h2>
+    <div>
+        <table class="table my_custom_table">
+            <thead class="my_custom_thead">
+                <tr>
+                    <th>Code</th>
+                    <th>Valid From</th>
+                    <th>Valid To</th>
+                    <th>Discount (%)</th>
+                    <th>Active</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for voucher in vouchers %}
+                <tr>
+                    <td>{{ voucher.code }}</td>
+                    <td>{{ voucher.valid_from|date:"Y-m-d H:i" }}</td>
+                    <td>{{ voucher.valid_to|date:"Y-m-d H:i" }}</td>
+                    <td>{{ voucher.discount }}</td>
+                    <td>{{ voucher.active|yesno:"Yes,No" }}</td>
+                    <td>
+                        <a href="{% url 'vouchers:delete_voucher' voucher.id %}" class="btn btn-danger btn-sm">Delete</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <a href="{% url 'vouchers:add_voucher' %}" class="btn btn-secondary">Add New Voucher</a>
+    </div>
+    <br>
     {% endif %}
     <h2 class="my_title">Booking History</h2>
     {% if orders %}
