@@ -7,10 +7,66 @@
     Profile - Sobaka Model Agency
 {% endblock %}
 {% block content %}
-    <div class="container">
-        <br>
-        <h1 class="my_title text-center">Your Account</h1>
-        <br>
-    </div>
+<div class="container">
     <br>
+    <h1 class="my_title text-center">Your Account</h1>
+    <br>
+
+    <h2 class="my_title">Booking History</h2>
+    {% if orders %}
+        <table class="table my_custom_table">
+            <thead class="my_custom_thead">
+                <tr>
+                    <th>Order ID</th>
+                    <th>Date</th>
+                    <th>Total (€)</th>
+                    <th>Details</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                <tr>
+                    <td>{{ order.id }}</td>
+                    <td>{{ order.created|date:"Y-m-d" }}</td>
+                    <td>€{{ order.total }}</td>
+                    <td>
+                        <button class="btn btn-secondary btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#order-{{ order.id }}" aria-expanded="false" aria-controls="order-{{ order.id }}">
+                            View Details
+                        </button>
+                    </td>
+                </tr>
+                <tr class="collapse" id="order-{{ order.id }}">
+                    <td colspan="4">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Model</th>
+                                    <th>Duration (hours)</th>
+                                    <th>Date Booked</th>
+                                    <th>Rate (€)</th>
+                                    <th>Total (€)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in order.orderitem_set.all %}
+                                <tr>
+                                    <td>{{ item.product }}</td>
+                                    <td>{{ item.duration }}</td>
+                                    <td>{{ item.booked_date|date:"Y-m-d" }}</td>
+                                    <td>€{{ item.price }}</td>
+                                    <td>€{{ item.sub_total }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>You have no booking history.</p>
+    {% endif %}
+</div>
+<br>
 {% endblock %}
