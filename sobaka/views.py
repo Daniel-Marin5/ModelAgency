@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from .models import Category, Human, Review, NewsArticle
 from django.core.paginator import Paginator, EmptyPage, InvalidPage
 from order.models import OrderItem
-from .forms import ReviewForm, HumanForm
+from .forms import ReviewForm, HumanForm, NewsArticleForm
 from django.core.paginator import Paginator
 
 def hum_list(request, category_id=None):
@@ -95,3 +95,36 @@ def delete_human(request, human_id):
         human.delete()
         return redirect('accounts:profile')
     return render(request, 'sobaka/delete_human.html', {'human': human})
+
+@user_passes_test(is_admin)
+def add_news_article(request):
+    if request.method == 'POST':
+        form = NewsArticleForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('accounts:profile')
+    else:
+        form = NewsArticleForm()
+    return render(request, 'sobaka/add_news_article.html', {'form': form})
+
+
+@user_passes_test(is_admin)
+def edit_news_article(request, article_id):
+    article = get_object_or_404(NewsArticle, id=article_id)
+    if request.method == 'POST':
+        form = NewsArticleForm(request.POST, request.FILES, instance=article)
+        if form.is_valid():
+            form.save()
+            return redirect('accounts:profile')
+    else:
+        form = NewsArticleForm(instance=article)
+    return render(request, 'sobaka/edit_news_article.html', {'form': form, 'article': article})
+
+
+@user_passes_test(is_admin)
+def delete_news_article(request, article_id):
+    article = get_object_or_404(NewsArticle, id=article_id)
+    if request.method == 'POST':
+        article.delete()
+        return redirect('accounts:profile')
+    return render(request, 'sobaka/delete_news_article.html', {'article': article})

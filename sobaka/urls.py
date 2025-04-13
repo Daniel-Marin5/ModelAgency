@@ -12,4 +12,7 @@ urlpatterns = [
     path('edit_human/<uuid:human_id>/', views.edit_human, name='edit_human'),
     path('delete_human/<uuid:human_id>/', views.delete_human, name='delete_human'),
     path('news/', views.news_list, name='news'),
+    path('news/add/', views.add_news_article, name='add_news_article'),
+    path('news/edit/<uuid:article_id>/', views.edit_news_article, name='edit_news_article'),
+    path('news/delete/<uuid:article_id>/', views.delete_news_article, name='delete_news_article'),
 ]

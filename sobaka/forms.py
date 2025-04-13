@@ -1,5 +1,5 @@
 from django import forms
-from .models import Review, Human
+from .models import Review, Human, NewsArticle
 
 class ReviewForm(forms.ModelForm):
     class Meta:
@@ -31,4 +31,14 @@ class HumanForm(forms.ModelForm):
             'hip_size': forms.NumberInput(attrs={'class': 'form-control'}),
             'eye_color': forms.TextInput(attrs={'class': 'form-control'}),
             'hair_color': forms.TextInput(attrs={'class': 'form-control'}),
+        }
+
+class NewsArticleForm(forms.ModelForm):
+    class Meta:
+        model = NewsArticle
+        fields = ['title', 'image', 'description']
+        widgets = {
+            'title': forms.TextInput(attrs={'class': 'form-control'}),
+            'image': forms.FileInput(attrs={'class': 'form-control'}),
+            'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 5}),
         }

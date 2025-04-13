@@ -14,6 +14,34 @@
     {% if user.permissions %}
     <h2>Admin Functions</h2>
     <br>
+    <h3 class="my_title">Manage News Articles</h3>
+    <div>
+        <table class="table my_custom_table">
+            <thead class="my_custom_thead">
+                <tr>
+                    <th>Title</th>
+                    <th>Created</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for article in news_articles %}
+                <tr>
+                    <td>{{ article.title }}</td>
+                    <td>{{ article.created|date:"Y-m-d" }}</td>
+                    <td>
+                        <a href="{% url 'sobaka:edit_news_article' article.id %}" class="btn btn-secondary btn-sm">Edit</a>
+                        &nbsp;
+                        <a href="{% url 'sobaka:delete_news_article' article.id %}" class="btn btn-danger btn-sm">Delete</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <a href="{% url 'sobaka:add_news_article' %}" class="btn btn-secondary">Add New Article</a>
+    </div>
+    <br>
+    <br>
     <div>
         <h3 class="my_title">Manage Models</h3>
         <table class="table my_custom_table">

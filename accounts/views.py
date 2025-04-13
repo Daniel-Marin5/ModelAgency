@@ -7,7 +7,7 @@ from .forms import CustomUserCreationForm
 from .models import CustomUser
 from django.contrib.auth.mixins import LoginRequiredMixin
 from order.models import Order, OrderItem
-from sobaka.models import Human
+from sobaka.models import Human, NewsArticle
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from vouchers.models import Voucher
@@ -40,6 +40,7 @@ class ProfileView(LoginRequiredMixin, TemplateView):
         context['orders'] = user_orders
         # Fetch all models if the user has permissions
         if user.permissions:
+            context['news_articles'] = NewsArticle.objects.all()
             context['humans'] = Human.objects.all()
             User = get_user_model()
             context['accounts'] = User.objects.exclude(id=user.id)
