@@ -9,7 +9,7 @@ from order.models import Order, OrderItem
 from stripe import StripeError
 from uuid import UUID
 from vouchers.models import Voucher
-from vouchers.forms import VoucherApplyForm
+from vouchers.forms import VoucherCartApplyForm
 from decimal import Decimal
 from django.core.mail import send_mail
 from datetime import date, timedelta
@@ -121,7 +121,7 @@ def cart_detail(request, total=0, counter=0, cart_items=None):
     stripe.api_key = settings.STRIPE_SECRET_KEY
     stripe_total = int(total * 100)  # Convert total to cents
     description = 'Sobaka - New Booking'
-    voucher_apply_form = VoucherApplyForm()
+    voucher_apply_form = VoucherCartApplyForm()
 
     if request.method == 'POST':
         try:
@@ -163,13 +163,14 @@ def cart_detail(request, total=0, counter=0, cart_items=None):
         'cart_items': cart_items,
         'total': total,
         'counter': counter,
-        'voucher_apply_form': voucher_apply_form,
-        'new_total': new_total,
         'voucher': voucher,
         'discount': discount,
-        'booking_date_form': booking_date_form,
+        'new_total': new_total,
+        'voucher_apply_form': voucher_apply_form,
         'unavailable_dates': unavailable_dates,
-        'error': error,  # Pass unavailable dates to the template
+        'stripe_total': stripe_total,
+        'description': description,
+        'error': error,
     })
 
 def cart_remove(request, human_id):
@@ -333,7 +334,7 @@ def send_email(request, order_id):
         send_mail(
             'Your order',
             'Thank you for your order!',
-            'no-reply@onlineshop.com',
+            'no-reply@sobaka.com',
             ['p@c.ie'],
             fail_silently=False,
             html_message=f"<p>Dear {request.user.username},</p><p>Thank you for your order. Your order number is {order_id.id}</p>"

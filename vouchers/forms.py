@@ -1,6 +1,9 @@
 from django import forms
 from django.core.validators import MinValueValidator, MaxValueValidator
 
+class VoucherCartApplyForm(forms.Form):
+    code = forms.CharField(label="Voucher Code", max_length=50)
+
 class VoucherApplyForm(forms.Form):
     code = forms.CharField(label="Voucher Code", max_length=50)
     discount = forms.IntegerField(

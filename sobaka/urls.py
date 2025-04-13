@@ -15,4 +15,5 @@ urlpatterns = [
     path('news/add/', views.add_news_article, name='add_news_article'),
     path('news/edit/<uuid:article_id>/', views.edit_news_article, name='edit_news_article'),
     path('news/delete/<uuid:article_id>/', views.delete_news_article, name='delete_news_article'),
+    path('contact/', views.contact, name='contact'),
 ]

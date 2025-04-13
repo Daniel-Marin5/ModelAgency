@@ -5,20 +5,30 @@ from datetime import timedelta
 from django.utils.timezone import now
 from django.views.decorators.http import require_POST
 from .models import Voucher
-from .forms import VoucherApplyForm
+from .forms import VoucherApplyForm, VoucherCartApplyForm
 
-# Create your views here.
 def voucher_apply(request):
     now = timezone.now()
-    form = VoucherApplyForm(request.POST)
-    if form.is_valid():
-        code = form.cleaned_data['code']
-        try:
-            voucher = Voucher.objects.get(code__iexact=code, valid_from__lte=now, valid_to__gte=now, active=True)
-            request.session['voucher_id'] = voucher.id
-        except Voucher.DoesNotExist:
+    if request.method == 'POST':
+        form = VoucherCartApplyForm(request.POST)  # Use the new form here
+        if form.is_valid():
+            code = form.cleaned_data['code']
+            try:
+                voucher = Voucher.objects.get(
+                    code__iexact=code,
+                    valid_from__lte=now,
+                    valid_to__gte=now,
+                    active=True
+                )
+                request.session['voucher_id'] = voucher.id
+            except Voucher.DoesNotExist:
+                request.session['voucher_id'] = None
+        else:
+            # If the form is invalid, clear the voucher session
             request.session['voucher_id'] = None
-        return redirect('cart:cart_detail')
+
+    # Redirect back to the cart page in all cases
+    return redirect('cart:cart_detail')
 
 @login_required
 def add_voucher(request):

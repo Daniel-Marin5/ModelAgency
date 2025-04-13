@@ -158,9 +158,10 @@
                 </table>
                 <p>Apply a voucher:</p>
                 <form action="{% url 'vouchers:apply' %}" method="post">
-                    {{ voucher_apply_form }}
-                    <input class="btn btn-secondary btn-block my_custom_button" type="submit" value="Apply">
                     {% csrf_token %}
+                    {{ voucher_apply_form.code.label_tag }}  <!-- Render the label for the code field -->
+                    {{ voucher_apply_form.code }}  <!-- Render the input for the code field -->
+                    <input class="btn btn-secondary btn-block my_custom_button" type="submit" value="Apply">
                 </form>
                 <!-- Payment Form --> 
                 <form action="{% url 'cart:cart_detail' %}" method="POST"> 

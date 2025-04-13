@@ -158,6 +158,7 @@ STRIPE_PUBLISHABLE_KEY = 'pk_test_51QKUzGF22nUUQqfKuSjovmxhE5CfriuEeHpEAX4KY0Emi
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'localhost' # MailHog listens on localhost
 EMAIL_PORT = 1025 # Default MailHog SMTP port
+DEFAULT_FROM_EMAIL = 'no-reply@sobaka.com'
 
 LOGGING = {
     'version': 1,

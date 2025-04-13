@@ -42,3 +42,18 @@ class NewsArticleForm(forms.ModelForm):
             'image': forms.FileInput(attrs={'class': 'form-control'}),
             'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 5}),
         }
+
+class ContactForm(forms.Form):
+    email = forms.EmailField(
+        widget=forms.EmailInput(attrs={'class': 'form-control'}),
+        help_text="Enter your email address."
+    )
+    description = forms.CharField(
+        widget=forms.Textarea(attrs={'class': 'form-control', 'rows': 5}),
+        help_text="Enter your measurements if contacting us about joining as a model."
+    )
+    picture = forms.ImageField(
+        required=False,
+        widget=forms.FileInput(attrs={'class': 'form-control'}),
+        help_text="Upload a headshot if contacting us about joining as a model."
+    )

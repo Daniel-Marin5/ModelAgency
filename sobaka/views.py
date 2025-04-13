@@ -3,8 +3,9 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from .models import Category, Human, Review, NewsArticle
 from django.core.paginator import Paginator, EmptyPage, InvalidPage
 from order.models import OrderItem
-from .forms import ReviewForm, HumanForm, NewsArticleForm
+from .forms import ReviewForm, HumanForm, NewsArticleForm, ContactForm
 from django.core.paginator import Paginator
+from django.core.mail import EmailMessage
 
 def hum_list(request, category_id=None):
     category = None
@@ -38,6 +39,41 @@ def news_list(request):
 def human_detail(request, category_id, human_id):
     human = get_object_or_404(Human, category_id=category_id, id=human_id)
     return render(request, 'sobaka/human.html', {'human':human})
+
+def contact(request):
+    if request.method == 'POST':
+        form = ContactForm(request.POST, request.FILES)
+        if form.is_valid():
+            email = form.cleaned_data['email']
+            description = form.cleaned_data['description']
+            picture = request.FILES.get('picture')
+
+            # Format the email content
+            message = f"""
+            New Contact Submission:
+            Email: {email}
+            Description: {description}
+            """
+
+            # Send the email
+            email_message = EmailMessage(
+                subject="New Contact Submission",
+                body=message,
+                from_email='no-reply@sobaka.com',
+                to=['p@c.ie'],  # Replace with your desired recipient email
+            )
+
+            # Attach the picture if provided
+            if picture:
+                email_message.attach(picture.name, picture.read(), picture.content_type)
+
+            email_message.send()
+
+            return render(request, 'sobaka/contact_success.html')  # Success page
+    else:
+        form = ContactForm()
+
+    return render(request, 'sobaka/contact.html', {'form': form})
 
 @login_required
 def leave_review(request, order_item_id):
