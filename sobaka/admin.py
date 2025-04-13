@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Category, Human, UnavailableDate, Review
+from .models import Category, Human, UnavailableDate, Review, NewsArticle
 
 class CategoryAdmin(admin.ModelAdmin):
     list_display = ['name']
@@ -25,3 +25,10 @@ class ReviewAdmin(admin.ModelAdmin):
     search_fields = ['human__name', 'user__username', 'comment']
 
 admin.site.register(Review, ReviewAdmin)
+
+class NewsArticleAdmin(admin.ModelAdmin):
+    list_display = ['title', 'created']
+    search_fields = ['title']
+    list_filter = ['created']
+
+admin.site.register(NewsArticle, NewsArticleAdmin)

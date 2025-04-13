@@ -81,3 +81,21 @@ class Review(models.Model):
 
     def __str__(self):
         return f"Review for {self.human.name} by {self.user.username}"
+
+class NewsArticle(models.Model):
+    id = models.UUIDField(
+        primary_key=True,
+        default=uuid.uuid4,
+        editable=False)
+    title = models.CharField(max_length=250, unique=True)
+    image = models.ImageField(upload_to='news', blank=True)
+    description = models.TextField()
+    created = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created']
+        verbose_name = 'news article'
+        verbose_name_plural = 'news articles'
+
+    def __str__(self):
+        return self.title

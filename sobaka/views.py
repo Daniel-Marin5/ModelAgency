@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, user_passes_test
-from .models import Category, Human, Review
+from .models import Category, Human, Review, NewsArticle
 from django.core.paginator import Paginator, EmptyPage, InvalidPage
 from order.models import OrderItem
 from .forms import ReviewForm, HumanForm
@@ -29,6 +29,10 @@ def hum_list(request, category_id=None):
         'hums': humans,
         'page': page,  # Pass the current page to the template
     })
+
+def news_list(request):
+    articles = NewsArticle.objects.all()
+    return render(request, 'sobaka/news.html', {'articles': articles})
     
 
 def human_detail(request, category_id, human_id):

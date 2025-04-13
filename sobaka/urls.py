@@ -11,4 +11,5 @@ urlpatterns = [
     path('add_human/', views.add_human, name='add_human'),
     path('edit_human/<uuid:human_id>/', views.edit_human, name='edit_human'),
     path('delete_human/<uuid:human_id>/', views.delete_human, name='delete_human'),
+    path('news/', views.news_list, name='news'),
 ]
