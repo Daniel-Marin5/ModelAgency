@@ -2,18 +2,20 @@
 Deployment:
 https://x00215334.pythonanywhere.com/
 
+
 Accounts:
 
-admin
-admin
+admin /
+admin /
 
-testadmin
-testadmin@test.com
-testpassword
+testadmin /
+testadmin@test.com /
+testpassword /
 
-testclient
-testclient@test.com
-testpassword
+testclient /
+testclient@test.com /
+testpassword /
+
 
 Requirements:
 
