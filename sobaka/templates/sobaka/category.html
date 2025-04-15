@@ -71,7 +71,7 @@
             detailsElement.textContent = `Hourly Rate: €${hourlyRate}`;
         }
     
-        // Store the hourly rate in a data attribute for resetting
+        // save rate so it resets back 
         document.addEventListener('DOMContentLoaded', function () {
             document.querySelectorAll('.human-details').forEach(function (element) {
                 element.setAttribute('data-hourly-rate', element.textContent.split('€')[1]);

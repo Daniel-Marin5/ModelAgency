@@ -39,7 +39,6 @@
                         </div>
                     </div>
             
-                    <!-- Human Details -->
                     <div class="col-12 col-sm-12 col-md-12 col-lg-6">
                         <div class="human_details">
                             <h1 class="my_hum_title">{{ human.name }}</h1>
@@ -65,7 +64,6 @@
                         </div>
                     </div>
         
-                <!-- Reviews Section -->
                     <div class="row mt-5">
                         <div class="col-12">
                             <h3>Reviews</h3>
@@ -89,22 +87,21 @@
 
                     <script>
                         document.addEventListener('DOMContentLoaded', function () {
-                            // Array of image URLs
                             const images = [
                                 "{{ human.image1.url }}",
                                 "{{ human.image2.url }}",
                                 "{{ human.image3.url }}",
                                 "{{ human.image4.url }}",
                                 "{{ human.image5.url }}"
-                            ].filter(Boolean); // Filter out any null or undefined images
+                            ].filter(Boolean); // filters if invalid bool
                     
                             const carouselImage = document.getElementById('carousel-image');
                             const thumbnails = document.querySelectorAll('.thumbnail');
                     
-                            // Add click event listeners to thumbnails
+                            // clicking thumbnail 
                             thumbnails.forEach((thumbnail, index) => {
                                 thumbnail.addEventListener('click', function () {
-                                    carouselImage.src = images[index]; // Update the main image
+                                    carouselImage.src = images[index]; // changes main pic
                                 });
                             });
                         });

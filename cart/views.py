@@ -31,7 +31,6 @@ def add_cart(request, human_id):
     if booking_date:
         booking_date = date.fromisoformat(booking_date)
         if not product.is_available_on(booking_date):
-            # If not available, redirect to the cart with an error message
             return redirect('cart:cart_detail')
 
     try:
@@ -41,32 +40,30 @@ def add_cart(request, human_id):
         cart.save()
     try:
         cart_item = CartItem.objects.get(product=product, cart=cart)
-        # Increment duration
-        cart_item.duration += 1  # Increment duration by 1 hour
+        cart_item.duration += 1
         cart_item.save()
     except CartItem.DoesNotExist:
-        # Create a new cart item with a default duration of 1 hour
+        # defaults cart if nothing exists
         cart_item = CartItem.objects.create(product=product, duration=1, cart=cart)
     return redirect('cart:cart_detail')
 
 def select_date(request):
     if request.method == 'POST':
-        cart_item_id = request.POST.get('cart_item_id')  # Get the cart item ID from the form
-        booking_date = request.POST.get('booking_date')  # Get the date from the form
+        cart_item_id = request.POST.get('cart_item_id') 
+        booking_date = request.POST.get('booking_date')
 
         if cart_item_id and booking_date:
-            booking_date = date.fromisoformat(booking_date)  # Convert string to date object
+            booking_date = date.fromisoformat(booking_date)  # makes string into date
             cart_item = get_object_or_404(CartItem, id=cart_item_id)
-
-            # Check if the model is available on the selected date
+            # checking date for product human
             if not cart_item.product.is_available_on(booking_date):
-                # If not available, show an error message
+                # error msg if they try book, should not show up but just in case
                 return render(request, 'cart.html', {
                     'cart_items': CartItem.objects.filter(cart=cart_item.cart, active=True),
                     'error': f"{cart_item.product.name} is not available on {booking_date}. Please select another date.",
                 })
 
-            # Store the selected date in the CartItem
+            # save date to cart/order
             cart_item.selected_date = booking_date
             cart_item.save()
 
@@ -74,7 +71,6 @@ def select_date(request):
     return redirect('cart:cart_detail')
 
 def get_unavailable_dates(request, human_id):
-    """API endpoint to fetch unavailable dates for a specific human."""
     human = get_object_or_404(Human, id=human_id)
     unavailable_dates = human.unavailable_dates.values_list('date', flat=True)
     return JsonResponse(list(unavailable_dates), safe=False)
@@ -178,7 +174,7 @@ def cart_remove(request, human_id):
     product = get_object_or_404(Human, id=human_id)
     cart_item = CartItem.objects.get(product=product, cart=cart)
     if cart_item.duration > 1:
-        cart_item.duration -= 1  # Decrement duration by 1 hour
+        cart_item.duration -= 1
         cart_item.save()
     else:
         cart_item.delete()
@@ -188,7 +184,7 @@ def full_remove(request, human_id):
     cart = Cart.objects.get(cart_id=_cart_id(request))
     product = get_object_or_404(Human, id=human_id)
     cart_item = CartItem.objects.get(product=product, cart=cart)
-    cart_item.selected_date = None  # Clear the selected date
+    cart_item.selected_date = None  # set the date back to none/default
     cart_item.delete()
     if not CartItem.objects.filter(cart=cart).exists():
         request.session['voucher_id'] = None
@@ -200,8 +196,8 @@ def empty_cart(request):
         cart = Cart.objects.get(cart_id=_cart_id(request))
         cart_items = CartItem.objects.filter(cart=cart, active=True)
         for cart_item in cart_items:
-            cart_item.selected_date = None  # Clear the selected date
-            cart_item.save()  # Save the changes to the database
+            cart_item.selected_date = None  # same as full remove for date but loops for all humans/dates
+            cart_item.save()
         cart_items.delete()
         cart.delete()
         request.session['voucher_id'] = None
@@ -294,14 +290,14 @@ def create_order(request):
                     oi.price -= discount
                 oi.save()
 
-                # Add the selected date to the UnavailableDate model
+                # point in create order view where the selected date is added to the unavailable dates model
                 if item.selected_date:
                     UnavailableDate.objects.create(human=item.product, date=item.selected_date)
                     logger.info(f"Unavailable date added: {item.selected_date} for {item.product}")
 
             except Exception as e: 
                 logger.error(f"Error processing item {item.id}: {e}")
-                continue  # Log error and continue processing other items
+                continue 
 
         # Send confirmation email
         try:

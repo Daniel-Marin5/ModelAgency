@@ -111,8 +111,8 @@
 .thumbnail {
     width: 75px;
     height: auto;
-    margin: 0 5px; /* Adds spacing between thumbnails */
-    cursor: pointer; /* Changes cursor to pointer for better UX */
+    margin: 0 5px; 
+    cursor: pointer; 
 }
 .thumbnail-controls {
     display: flex;
@@ -184,7 +184,7 @@
 	margin-top: 5px;
 }
 
-/* Dark mode styles */
+/* night mode  */
 body.dark-mode {
     background-color: #1b1a1d;
     color: #ffffff;
@@ -383,7 +383,7 @@ body.dark-mode .form-control:focus {
 body.dark-mode .errorlist li {
     color: #ff6b6b !important;
 }
-
+/* sign up */
 body.dark-mode .form-text,
 body.dark-mode .form-text * {
     color: #ffffff !important;
@@ -395,46 +395,46 @@ body.dark-mode div#id_password2_helptext {
     color: #ffffff !important;
 }
 
-/* Dark mode styles for select, option, and textarea */
+/* form inputs */
 body.dark-mode form p select,
 body.dark-mode form p textarea {
-    background-color: #444444 !important; /* Same as the search box */
-    color: #ffffff !important; /* White text for readability */
-    border: 1px solid #555555 !important; /* Border color for consistency */
+    background-color: #444444 !important;
+    color: #ffffff !important;
+    border: 1px solid #555555 !important;
 }
 
 body.dark-mode form p select:focus,
 body.dark-mode form p textarea:focus {
-    background-color: #555555 !important; /* Slightly lighter background on focus */
+    background-color: #555555 !important;
     color: #ffffff !important;
-    border-color: #666666 !important; /* Highlighted border on focus */
-    box-shadow: none !important; /* Remove default focus shadow */
+    border-color: #666666 !important; 
+    box-shadow: none !important; 
 }
 
 body.dark-mode form p select option {
-    background-color: #444444 !important; /* Dropdown options background */
-    color: #ffffff !important; /* Dropdown options text color */
+    background-color: #444444 !important; 
+    color: #ffffff !important; 
 }
 
 body.dark-mode form p select option:hover {
-    background-color: #555555 !important; /* Highlighted option background */
+    background-color: #555555 !important; 
 }
 
-/* Dark mode styles for pagination */
+/* paginator buttons */
 body.dark-mode .pagination-container .pagination-buttons .paginator-btn {
-    background-color: #333333 !important; /* Dark background */
-    color: #ffffff !important; /* White text */
-    border: 1px solid #444444 !important; /* Border color */
-    margin: 0 5px; /* Add spacing between buttons */
+    background-color: #333333 !important;
+    color: #ffffff !important;
+    border: 1px solid #444444 !important; 
+    margin: 0 5px; 
 }
 
 body.dark-mode .pagination-container .pagination-buttons .paginator-btn:hover {
-    background-color: #444444 !important; /* Slightly lighter background on hover */
-    border-color: #555555 !important; /* Highlighted border on hover */
+    background-color: #444444 !important; 
+    border-color: #555555 !important; 
 }
 
 body.dark-mode .pagination-container .pagination-buttons .paginator-btn.active {
-    background-color: #555555 !important; /* Highlighted background for active button */
-    color: #ffffff !important; /* White text for active button */
-    border-color: #666666 !important; /* Border for active button */
+    background-color: #555555 !important; 
+    color: #ffffff !important; 
+    border-color: #666666 !important; 
 }

@@ -6,7 +6,7 @@ def thanks(request, order_id=None):
     customer_order = None
     if order_id:
         customer_order = get_object_or_404(Order, id=order_id)
-        # Restrict access to the order
+        # stop people from changing the number in url to see other ppls details, only shows if order email is logged in account's email
         if customer_order.emailAddress != request.user.email:
             raise Http404("You are not authorized to view this order.")
     return render(request, 'thanks.html', {'customer_order': customer_order})

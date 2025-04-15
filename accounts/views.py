@@ -35,22 +35,22 @@ class ProfileView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user = self.request.user
-        # Fetch the user's orders
+        # pull orders
         user_orders = Order.objects.filter(emailAddress=user.email).order_by('-created')
         context['orders'] = user_orders
-        # Fetch all models if the user has permissions
+        # get details if admin
         if user.permissions:
             context['news_articles'] = NewsArticle.objects.all()
             context['humans'] = Human.objects.all()
             User = get_user_model()
             context['accounts'] = User.objects.exclude(id=user.id)
-            context['vouchers'] = Voucher.objects.all()  # Add vouchers to the context
+            context['vouchers'] = Voucher.objects.all()
         return context
 
 @login_required
 def toggle_permissions(request, user_id):
     if not request.user.permissions:
-        return redirect('accounts:profile')  # Redirect if the user doesn't have permissions
+        return redirect('accounts:profile')
 
     User = get_user_model()
     account = get_object_or_404(User, id=user_id)
@@ -62,27 +62,24 @@ def toggle_permissions(request, user_id):
 @login_required
 def delete_user(request, user_id):
     if not request.user.permissions:
-        return redirect('accounts:profile')  # Redirect if the user doesn't have permissions
+        return redirect('accounts:profile')
 
     User = get_user_model()
     account = get_object_or_404(User, id=user_id)
 
     if request.method == 'POST':
         account.delete()
-        return redirect('accounts:profile')  # Redirect after deletion
+        return redirect('accounts:profile')
 
-    # Render the confirmation page for GET requests
     return render(request, 'accounts/delete_user.html', {'account': account})
 
 @login_required
 def view_bookings(request):
     if not request.user.permissions:
-        return redirect('accounts:profile')  # Redirect if the user doesn't have permissions
+        return redirect('accounts:profile')
 
-    # Fetch all orders
     orders = Order.objects.all().order_by('-created')
 
-    # Paginate the orders (20 rows per page)
     paginator = Paginator(orders, 20)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)

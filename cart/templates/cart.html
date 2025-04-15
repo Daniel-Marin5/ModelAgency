@@ -7,10 +7,8 @@
     Sobaka Model Agency - Booking
 {% endblock %}
 {% block content %}
-<!-- Include Flatpickr CSS -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 
-<!-- Include Flatpickr JS -->
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     {% if not cart_items %}
         <div>
@@ -60,10 +58,10 @@
                                 <br>
                                 Duration (hours): {{ cart_item.duration }}
                                 <br>
-                                <!-- Calendar Widget -->
+                                <!-- flatpickr calendar widget -->
                                 <form method="post" action="{% url 'cart:select_date' %}">
                                     {% csrf_token %}
-                                    <input type="hidden" name="cart_item_id" value="{{ cart_item.id }}">  <!-- Pass the cart item ID -->
+                                    <input type="hidden" name="cart_item_id" value="{{ cart_item.id }}">
                                     <input id="booking-date-{{ cart_item.id }}" 
                                            name="booking_date" 
                                            type="text" 
@@ -81,14 +79,12 @@
                                 €{{ cart_item.sub_total }}
                             </td>
                             <td>
-                                <!-- Hide the "add" button if duration is 8 -->
                                 {% if cart_item.duration < 8 %}
                                 <a href="{% url 'cart:add_cart' cart_item.product.id %}" class="custom_a">
                                     <i class="fas fa-plus-circle custom_icon"></i>
                                 </a>
                                 {% endif %}
                                 &nbsp;
-                                <!-- Hide the "remove" button if duration is 1 -->
                                 {% if cart_item.duration > 1 %}
                                 <a href="{% url 'cart:cart_remove' cart_item.product.id %}" class="custom_a">
                                     <i class="fas fa-minus-circle custom_icon"></i>
@@ -159,8 +155,8 @@
                 <p>Apply a voucher:</p>
                 <form action="{% url 'vouchers:apply' %}" method="post">
                     {% csrf_token %}
-                    {{ voucher_apply_form.code.label_tag }}  <!-- Render the label for the code field -->
-                    {{ voucher_apply_form.code }}  <!-- Render the input for the code field -->
+                    {{ voucher_apply_form.code.label_tag }}
+                    {{ voucher_apply_form.code }}
                     <input class="btn btn-secondary btn-block my_custom_button" type="submit" value="Apply">
                 </form>
                 <!-- Payment Form --> 
@@ -186,14 +182,14 @@
         console.log('Initializing Flatpickr...');
         document.querySelectorAll('input[id^="booking-date-"]').forEach(function (input) {
             console.log('Initializing Flatpickr for input:', input);
-            const humanId = input.getAttribute('data-id');  // Get the human ID from the data-id attribute
+            const humanId = input.getAttribute('data-id'); // get id
 
             if (!humanId) {
                 console.error('Human ID is null or undefined for input:', input);
-                return;  // Skip this input if humanId is not set
+                return;  // failsafe if something goes wrong with id
             }
 
-            fetch(`/cart/unavailable_dates/${humanId}/`)
+            fetch(`/cart/unavailable_dates/${humanId}/`) // get array
                 .then(response => {
                     if (!response.ok) {
                         throw new Error(`HTTP error! status: ${response.status}`);
@@ -201,12 +197,12 @@
                     return response.json();
                 })
                 .then(unavailableDates => {
-                    console.log('Unavailable dates:', unavailableDates);
+                    console.log('Unavailable dates:', unavailableDates); // debugging
                     flatpickr(input, {
                         minDate: "today",
-                        maxDate: new Date().fp_incr(14),
+                        maxDate: new Date().fp_incr(14), // 2 weeks
                         dateFormat: "Y-m-d",
-                        disable: unavailableDates.map(date => new Date(date)),
+                        disable: unavailableDates.map(date => new Date(date)), // map the selected date to unavailabledates (create_order view)
                     });
                 })
                 .catch(error => {

@@ -72,7 +72,7 @@ class Human(models.Model):
 class Review(models.Model):
     human = models.ForeignKey(Human, on_delete=models.CASCADE, related_name='reviews')
     user = models.ForeignKey('accounts.CustomUser', on_delete=models.CASCADE)
-    rating = models.IntegerField(choices=[(i, i) for i in range(1, 6)])  # Rating from 1 to 5
+    rating = models.IntegerField(choices=[(i, i) for i in range(1, 6)])
     comment = models.TextField(blank=True)
     created = models.DateTimeField(auto_now_add=True)
 

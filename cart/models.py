@@ -15,7 +15,7 @@ class Cart(models.Model):
 class CartItem(models.Model):
     product = models.ForeignKey(Human, on_delete=models.CASCADE)
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
-    duration = models.IntegerField(default=1)  # New field for booking duration (in hours)
+    duration = models.IntegerField(default=1)
     selected_date = models.DateField(null=True, blank=True)
     active = models.BooleanField(default=True)
     class Meta:

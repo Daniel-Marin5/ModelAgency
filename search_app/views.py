@@ -32,5 +32,5 @@ class SearchResultsListView(ListView):
         }
         context['query'] = query
         context['attribute'] = attribute
-        context['attribute_label'] = attribute_labels.get(attribute, attribute.title())  # Resolve the label
+        context['attribute_label'] = attribute_labels.get(attribute, attribute.title())
         return context

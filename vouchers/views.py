@@ -10,7 +10,7 @@ from .forms import VoucherApplyForm, VoucherCartApplyForm
 def voucher_apply(request):
     now = timezone.now()
     if request.method == 'POST':
-        form = VoucherCartApplyForm(request.POST)  # Use the new form here
+        form = VoucherCartApplyForm(request.POST) #changed to new model
         if form.is_valid():
             code = form.cleaned_data['code']
             try:
@@ -24,10 +24,8 @@ def voucher_apply(request):
             except Voucher.DoesNotExist:
                 request.session['voucher_id'] = None
         else:
-            # If the form is invalid, clear the voucher session
             request.session['voucher_id'] = None
 
-    # Redirect back to the cart page in all cases
     return redirect('cart:cart_detail')
 
 @login_required
@@ -41,8 +39,8 @@ def add_voucher(request):
             Voucher.objects.create(
                 code=form.cleaned_data['code'],
                 valid_from=now(),
-                valid_to=now() + timedelta(days=365),  # Automatically valid for one year
-                discount=form.cleaned_data['discount'],  # Use the discount from the form
+                valid_to=now() + timedelta(days=365),  # makes it default +1 year
+                discount=form.cleaned_data['discount'], 
                 active=True
             )
             return redirect('accounts:profile')
@@ -53,14 +51,12 @@ def add_voucher(request):
 @login_required
 def delete_voucher(request, voucher_id):
     if not request.user.permissions:
-        return redirect('accounts:profile')  # Redirect if the user doesn't have permissions
+        return redirect('accounts:profile')
 
     voucher = get_object_or_404(Voucher, id=voucher_id)
 
     if request.method == 'POST':
-        # Delete the voucher and redirect to the profile page
         voucher.delete()
         return redirect('accounts:profile')
-
-    # Render the confirmation page for GET requests
+        
     return render(request, 'vouchers/delete_voucher.html', {'voucher': voucher})

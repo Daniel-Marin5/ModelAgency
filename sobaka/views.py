@@ -15,20 +15,20 @@ def hum_list(request, category_id=None):
         category = get_object_or_404(Category, id=category_id)
         humans = Human.objects.filter(category=category, available=True)
 
-    paginator = Paginator(humans, 6)  # Set the number of items per page
+    paginator = Paginator(humans, 6) 
     try:
-        page = int(request.GET.get('page', '1'))  # Get the current page number
+        page = int(request.GET.get('page', '1'))
     except ValueError:
-        page = 1  # Default to page 1 if the page parameter is invalid
+        page = 1  # default page
     try:
-        humans = paginator.page(page)  # Get the humans for the current page
+        humans = paginator.page(page) 
     except (EmptyPage, InvalidPage):
-        humans = paginator.page(paginator.num_pages)  # Show the last page if the page is out of range
+        humans = paginator.page(paginator.num_pages) 
 
     return render(request, 'sobaka/category.html', {
         'category': category,
         'hums': humans,
-        'page': page,  # Pass the current page to the template
+        'page': page, 
     })
 
 def news_list(request):
@@ -48,28 +48,28 @@ def contact(request):
             description = form.cleaned_data['description']
             picture = request.FILES.get('picture')
 
-            # Format the email content
+            # email format
             message = f"""
             New Contact Submission:
             Email: {email}
             Description: {description}
             """
 
-            # Send the email
+            # send
             email_message = EmailMessage(
                 subject="New Contact Submission",
                 body=message,
                 from_email='no-reply@sobaka.com',
-                to=['p@c.ie'],  # Replace with your desired recipient email
+                to=['p@c.ie'], # i dont think this is what we should use but it works
             )
 
-            # Attach the picture if provided
+            # attaching pics if one was uploaded in the form
             if picture:
                 email_message.attach(picture.name, picture.read(), picture.content_type)
 
             email_message.send()
 
-            return render(request, 'sobaka/contact_success.html')  # Success page
+            return render(request, 'sobaka/contact_success.html')
     else:
         form = ContactForm()
 
@@ -81,7 +81,7 @@ def leave_review(request, order_item_id):
     human = get_object_or_404(Human, name=order_item.product)
 
     if order_item.reviewed:
-        return redirect(human.get_absolute_url())  # Redirect if already reviewed
+        return redirect(human.get_absolute_url())  # after review shows the page
 
     if request.method == 'POST':
         form = ReviewForm(request.POST)

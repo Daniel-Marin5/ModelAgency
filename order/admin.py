@@ -7,9 +7,9 @@ class OrderItemAdmin(admin.TabularInline):
         ('Product', {'fields': ['product']}),
         ('Duration', {'fields': ['duration']}),
         ('Price', {'fields': ['price']}),
-        ('Booked Date', {'fields': ['booked_date']}),  # Add booked date
+        ('Booked Date', {'fields': ['booked_date']}),
     ]
-    readonly_fields = ['product', 'duration', 'price', 'booked_date']  # Make booked_date readonly
+    readonly_fields = ['product', 'duration', 'price', 'booked_date']
     can_delete = False
     extra = 0
 

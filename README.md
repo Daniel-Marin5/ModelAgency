@@ -3,8 +3,8 @@
 admin
 admin
 
-testaccount1
-testacc@test.com
+testadmin
+testadmin@test.com
 testpassword
 
 testclient
