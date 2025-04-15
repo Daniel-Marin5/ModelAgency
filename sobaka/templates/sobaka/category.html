@@ -59,6 +59,25 @@
         </div>
     </div>
     
+    <div class="mx-auto pagination-container">
+        {% if hums.paginator.num_pages > 1 %}
+            <hr>
+            <div class="text-center pagination-buttons">
+                {% if hums.has_previous %}
+                    <a href="?page={{ hums.previous_page_number }}" class="btn btn-secondary btn-sm paginator-btn pagination-prev">Previous</a>
+                {% endif %}
+                {% for pg in hums.paginator.page_range %}
+                    <a href="?page={{ pg }}" class="btn btn-secondary btn-sm paginator-btn pagination-page {% if hums.number == pg %}active{% endif %}">{{ pg }}</a>
+                {% endfor %}
+                {% if hums.has_next %}
+                    <a href="?page={{ hums.next_page_number }}" class="btn btn-secondary btn-sm paginator-btn pagination-next">Next</a>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+    <br>
+
+    
     <script>
         function showDetails(imageElement, height, bust, waist, hips) {
             const detailsElement = imageElement.closest('.card').querySelector('.human-details');
