@@ -44,31 +44,38 @@
             {% for human in hums %}
                 <div class="my_bottom_margin col-9 col-lg-4 col-sm-12 col-md-4">
                     <div class="card text-center" style="min-width:18rem;">
-                        <a class="img" href="{{ human.get_absolute_url }}"><img class="card-img-top my_image" src="{{ human.image1.url }}" alt="{{ human.name }}"></a>
+                        <a class="img" href="{{ human.get_absolute_url }}">
+                            <img class="card-img-top my_image" src="{{ human.image1.url }}" alt="{{ human.name }}" 
+                                 onmouseover="showDetails(this, '{{ human.height }}', '{{ human.bust_size }}', '{{ human.waist_size }}', '{{ human.hip_size }}')" 
+                                 onmouseout="resetDetails(this)">
+                        </a>
                         <div class="card-body">
                             <h4>{{ human.name }}</h4>
-                            <p>Hourly Rate: €{{ human.price }}</p>
+                            <p class="human-details">Hourly Rate: €{{ human.price }}</p>
                         </div>
                     </div>
                 </div>
             {% endfor %}
         </div>
-        <div class="mx-auto pagination-container">
-            {% if hums.paginator.num_pages > 1 %}
-                <hr>
-                <div class="text-center pagination-buttons">
-                    {% if hums.has_previous %}
-                        <a href="?page={{ hums.previous_page_number }}" class="btn btn-secondary btn-sm paginator-btn pagination-prev">Previous</a>
-                    {% endif %}
-                    {% for pg in hums.paginator.page_range %}
-                        <a href="?page={{ pg }}" class="btn btn-secondary btn-sm paginator-btn pagination-page {% if hums.number == pg %}active{% endif %}">{{ pg }}</a>
-                    {% endfor %}
-                    {% if hums.has_next %}
-                        <a href="?page={{ hums.next_page_number }}" class="btn btn-secondary btn-sm paginator-btn pagination-next">Next</a>
-                    {% endif %}
-                </div>
-            {% endif %}
-        </div>
-        <br>
     </div>
+    
+    <script>
+        function showDetails(imageElement, height, bust, waist, hips) {
+            const detailsElement = imageElement.closest('.card').querySelector('.human-details');
+            detailsElement.textContent = `Height: ${height} Bust: ${bust} Waist: ${waist} Hips: ${hips}`;
+        }
+    
+        function resetDetails(imageElement) {
+            const detailsElement = imageElement.closest('.card').querySelector('.human-details');
+            const hourlyRate = detailsElement.getAttribute('data-hourly-rate');
+            detailsElement.textContent = `Hourly Rate: €${hourlyRate}`;
+        }
+    
+        // Store the hourly rate in a data attribute for resetting
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('.human-details').forEach(function (element) {
+                element.setAttribute('data-hourly-rate', element.textContent.split('€')[1]);
+            });
+        });
+    </script>
 {% endblock %}
