@@ -162,8 +162,10 @@
                 <!-- Payment Form --> 
                 <form action="{% url 'cart:cart_detail' %}" method="POST"> 
                     {% csrf_token %} 
-                    <button class="btn btn-secondary btn-block my_custom_button" type="submit">Pay with card</button> 
-                </form> 
+                    <button id="pay-button" class="btn btn-secondary btn-block my_custom_button" type="submit" disabled>
+                        Pay with card
+                    </button> 
+                </form>
                 {% if error %} 
                     <p style="color: red;">Error: {{ error }}</p> 
                 {% endif %} 
@@ -209,8 +211,36 @@
                     console.error('Error fetching unavailable dates:', error);
                     alert('Could not load unavailable dates. Please try again later.');
                 });
+            });
         });
-    });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const payButton = document.getElementById('pay-button');
+
+            function checkAllDatesConfirmed() {
+                const confirmButtons = document.querySelectorAll('form[action="{% url "cart:select_date" %}"] button[type="submit"]');
+                let allConfirmed = true;
+
+                confirmButtons.forEach(button => {
+                    const cartItemRow = button.closest('tr');
+                    const selectedDate = cartItemRow.querySelector('p.mt-2');
+                    if (!selectedDate || !selectedDate.textContent.includes('Selected Date:')) {
+                        allConfirmed = false;
+                    }
+                });
+
+                payButton.disabled = !allConfirmed;
+            }
+
+            document.querySelectorAll('form[action="{% url "cart:select_date" %}"] button[type="submit"]').forEach(button => {
+                button.addEventListener('click', function () {
+                    setTimeout(checkAllDatesConfirmed, 500);
+                });
+            });
+
+            checkAllDatesConfirmed();
+        });
+
     </script>
     
 {% endblock %}
