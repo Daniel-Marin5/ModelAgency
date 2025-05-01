@@ -34,13 +34,14 @@
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         const themeToggle = document.getElementById('theme-toggle');
         const themeIcon = document.getElementById('theme-icon');
         const logo = document.getElementById('logo');
         const currentTheme = localStorage.getItem('theme') || 'light';
         const logoLight = "{% static 'images/logo.png' %}";
         const logoDark = "{% static 'images/logo_night.png' %}";
+        const navbarTogglerIcon = document.querySelector('.navbar-toggler-icon');
 
         function updateLogo(theme) {
             if (theme === 'dark') {
@@ -50,25 +51,38 @@
             }
         }
 
+        function updateHamburgerIcon(theme) {
+            if (theme === 'dark') {
+                navbarTogglerIcon.style.backgroundImage = "url('data:image/svg+xml;charset=utf8,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 30 30%27%3E%3Cpath stroke=%27white%27 stroke-width=%272%27 d=%27M4 7h22M4 15h22M4 23h22%27/%3E%3C/svg%3E')";
+            } else {
+                navbarTogglerIcon.style.backgroundImage = "url('data:image/svg+xml;charset=utf8,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 30 30%27%3E%3Cpath stroke=%27black%27 stroke-width=%272%27 d=%27M4 7h22M4 15h22M4 23h22%27/%3E%3C/svg%3E')";
+            }
+        }
+
         if (currentTheme === 'dark') {
             document.body.classList.add('dark-mode');
             themeIcon.classList.remove('fa-moon');
             themeIcon.classList.add('fa-sun');
             updateLogo('dark');
+            updateHamburgerIcon('dark');
+        } else {
+            updateHamburgerIcon('light');
         }
 
-        themeToggle.addEventListener('click', function() {
+        themeToggle.addEventListener('click', function () {
             document.body.classList.toggle('dark-mode');
             if (document.body.classList.contains('dark-mode')) {
                 themeIcon.classList.remove('fa-moon');
                 themeIcon.classList.add('fa-sun');
                 localStorage.setItem('theme', 'dark');
                 updateLogo('dark');
+                updateHamburgerIcon('dark');
             } else {
                 themeIcon.classList.remove('fa-sun');
                 themeIcon.classList.add('fa-moon');
                 localStorage.setItem('theme', 'light');
                 updateLogo('light');
+                updateHamburgerIcon('light');
             }
         });
     });
