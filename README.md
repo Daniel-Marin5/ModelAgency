@@ -1,8 +1,4 @@
 # ModelAgency
-Deployment:
-https://x00215334.pythonanywhere.com/
-
-
 
 Accounts:
 
